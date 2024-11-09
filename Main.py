@@ -1,6 +1,12 @@
 from tkinter import Tk, Label, Button, Entry, StringVar, Checkbutton, IntVar, Frame, filedialog
 import random
+
+from T10_Linear_Complexity_test import linear_complexity_test
+from T1_Frequency_Test import monobit_test
+from T4_longest_run import longest_run_ones_test
 from T12ApproximateEntropy import approximate_entropy_test
+from T5_binary_matrix import binary_matrix_rank_test
+from T6_Discrete_Fourier_transform import nist_discrete_fourier_transform
 from T9MaurersUniversalStatistical import maurers_universal_statistical_test
 
 # Crear la ventana principal
@@ -94,8 +100,24 @@ def calcular_pruebas():
         
         # Ejecutar pruebas seleccionadas
         for test_id in selected_tests:
-            if test_id == 9:
+            if test_id == 1:
+                p_valor, es_aleatorio = monobit_test(bits)
+            elif test_id == 4:
+                p_valor, es_aleatorio = longest_run_ones_test(bits)
+            elif test_id == 5:
+                try:
+                    p_valor, es_aleatorio = binary_matrix_rank_test(bits, matrix_size=32)
+                except ValueError:
+                    p_valor, es_aleatorio = 0.01, False
+            elif test_id == 6:
+                p_valor, es_aleatorio = nist_discrete_fourier_transform(bits)
+            elif test_id == 9:
                 _, p_valor, es_aleatorio = maurers_universal_statistical_test(bits)
+            elif test_id == 10:
+                try:
+                    p_valor, es_aleatorio = linear_complexity_test(bits)
+                except ValueError:
+                    p_valor, es_aleatorio = 0.01, False
             elif test_id == 12:
                 _, p_valor, es_aleatorio = approximate_entropy_test(bits)
             else:

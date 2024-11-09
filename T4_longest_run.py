@@ -41,10 +41,12 @@ def longest_run_ones_test(bits, block_size=8):
     # Calculate the p-value
     p_value = gammaincc(len(v) / 2.0, chi_squared / 2.0)
 
-    return p_value
+    passes_test = p_value >= 0.01
+
+    return p_value, passes_test
 
 if __name__ == '__main__':
     # Example usage
     bits = [1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1]
-    p_value = longest_run_ones_test(bits)
-    print(f"P-value: {p_value}")
+    p_value, passes_test = longest_run_ones_test(bits)
+    print(f"P-value: {p_value}, Passes test: {passes_test}")
