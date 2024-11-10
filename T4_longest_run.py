@@ -1,52 +1,46 @@
 import math
 from scipy.special import gammaincc
 
-def longest_run_ones_test(bits, block_size=8):
+def prueba_corrida_mas_larga(bits, tamano_bloque=8):
     n = len(bits)
-    if n < block_size:
+    if n < tamano_bloque:
         return -1, False
 
-    # Determine the number of blocks
-    num_blocks = n // block_size
+    num_bloques = n // tamano_bloque
 
-    # Define the expected probabilities for the longest run of ones in a block
-    if block_size == 8:
+    if tamano_bloque == 8:
         v = [1, 2, 3, 4]
         pi = [0.2148, 0.3672, 0.2305, 0.1875]
-    elif block_size == 128:
+    elif tamano_bloque == 128:
         v = [4, 5, 6, 7, 8, 9]
         pi = [0.1174, 0.2430, 0.2493, 0.1752, 0.1027, 0.1124]
-    elif block_size == 10000:
+    elif tamano_bloque == 10000:
         v = [10, 11, 12, 13, 14, 15, 16]
         pi = [0.0882, 0.2092, 0.2483, 0.1933, 0.1208, 0.0675, 0.0727]
     else:
-        raise ValueError("Unsupported block size. Supported sizes are 8, 128, and 10000.")
+        return -1, False
 
-    # Count the longest run of ones in each block
-    counts = [0] * len(v)
-    for i in range(num_blocks):
-        block = bits[i * block_size:(i + 1) * block_size]
-        max_run = max(map(len, ''.join(map(str, block)).split('0')))
+    conteos = [0] * len(v)
+    for i in range(num_bloques):
+        bloque = bits[i * tamano_bloque:(i + 1) * tamano_bloque]
+        max_corrida = max(map(len, ''.join(map(str, bloque)).split('0')))
         for j in range(len(v)):
-            if max_run == v[j]:
-                counts[j] += 1
+            if max_corrida == v[j]:
+                conteos[j] += 1
                 break
-            elif max_run > v[-1]:
-                counts[-1] += 1
+            elif max_corrida > v[-1]:
+                conteos[-1] += 1
                 break
+    chi_cuadrado = sum([(conteos[i] - num_bloques * pi[i]) ** 2 / (num_bloques * pi[i]) for i in range(len(v))])
 
-    # Calculate the chi-squared statistic
-    chi_squared = sum([(counts[i] - num_blocks * pi[i]) ** 2 / (num_blocks * pi[i]) for i in range(len(v))])
+    valor_p = gammaincc(len(v) / 2.0, chi_cuadrado / 2.0)
 
-    # Calculate the p-value
-    p_value = gammaincc(len(v) / 2.0, chi_squared / 2.0)
+    pasa_prueba = valor_p >= 0.01
 
-    passes_test = p_value >= 0.01
-
-    return p_value, passes_test
+    return valor_p, pasa_prueba
 
 if __name__ == '__main__':
     # Example usage
     bits = [1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1]
-    p_value, passes_test = longest_run_ones_test(bits)
+    p_value, passes_test = prueba_corrida_mas_larga(bits)
     print(f"P-value: {p_value}, Passes test: {passes_test}")

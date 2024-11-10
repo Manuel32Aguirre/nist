@@ -1,45 +1,34 @@
 import numpy as np
 from scipy.linalg import lu
-
-def binary_matrix_rank_test(binary_data, matrix_size=32):
-    """
-    Perform the NIST Binary Matrix Rank Test for a given binary data sequence and matrix size.
+def prueba_rango_matriz_binaria(datos_binarios, tamano_matriz=32):
+    n = len(datos_binarios)
+    if n < tamano_matriz * tamano_matriz:
+        return -1, False
     
-    Parameters:
-    binary_data (list): A list of binary data (e.g., [1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1]).
-    matrix_size (int): The size of the matrix (e.g., 3 for a 3x3 matrix).
-    
-    Returns:
-    float: The p-value of the test.
-    """
-    n = len(binary_data)
-    if n < matrix_size * matrix_size:
-        raise ValueError("Binary data is too short for the given matrix size.")
-    
-    num_matrices = n // (matrix_size * matrix_size)
+    num_matrices = n // (tamano_matriz * tamano_matriz)
     matrices = []
     
     for i in range(num_matrices):
-        matrix = []
-        for j in range(matrix_size):
-            row = [binary_data[i * matrix_size * matrix_size + j * matrix_size + k] for k in range(matrix_size)]
-            matrix.append(row)
-        matrices.append(np.array(matrix))
+        matriz = []
+        for j in range(tamano_matriz):
+            fila = [datos_binarios[i * tamano_matriz * tamano_matriz + j * tamano_matriz + k] for k in range(tamano_matriz)]
+            matriz.append(fila)
+        matrices.append(np.array(matriz))
     
-    full_rank_count = 0
-    for matrix in matrices:
-        _, u = lu(matrix, permute_l=True)
-        rank = np.sum(np.abs(np.diag(u)) > 1e-10)
-        if rank == matrix_size:
-            full_rank_count += 1
+    cuenta_rango_completo = 0
+    for matriz in matrices:
+        _, u = lu(matriz, permute_l=True)
+        rango = np.sum(np.abs(np.diag(u)) > 1e-10)
+        if rango == tamano_matriz:
+            cuenta_rango_completo += 1
     
-    p_value = full_rank_count / num_matrices
+    valor_p = cuenta_rango_completo / num_matrices
 
-    passes_test = p_value >= 0.01
+    pasa_prueba = valor_p >= 0.01
 
-    return p_value, passes_test
+    return valor_p, pasa_prueba
 
-# Example usage
-binary_data = [1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1]
-p_value, passes_test = binary_matrix_rank_test(binary_data, matrix_size=3)
-print(f"P-value: {p_value}, passes test: {passes_test}")
+if __name__ == '__main__':
+    datos_binarios = [1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1]
+    valor_p, pasa_prueba = prueba_rango_matriz_binaria(datos_binarios, tamano_matriz=3)
+    print(f"Valor p: {valor_p}, pasa prueba: {pasa_prueba}")

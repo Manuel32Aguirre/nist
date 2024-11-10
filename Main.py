@@ -1,12 +1,12 @@
 from tkinter import Tk, Label, Button, Entry, StringVar, Checkbutton, IntVar, Frame, filedialog
 import random
 
-from T10_Linear_Complexity_test import linear_complexity_test
-from T1_Frequency_Test import monobit_test
-from T4_longest_run import longest_run_ones_test
+from T10_Linear_Complexity_test import prueba_complejidad_lineal
 from T12ApproximateEntropy import approximate_entropy_test
-from T5_binary_matrix import binary_matrix_rank_test
-from T6_Discrete_Fourier_transform import nist_discrete_fourier_transform
+from T1_Frequency_Test import prueba_monobit
+from T4_longest_run import prueba_corrida_mas_larga
+from T5_binary_matrix import prueba_rango_matriz_binaria
+from T6_Discrete_Fourier_transform import transformada_fourier_discreta_nist
 from T9MaurersUniversalStatistical import maurers_universal_statistical_test
 from T8OverlappingTemplateMachine import overlappingTemplateMachine
 from T2FrecuencyWithinABlock import block_frequency
@@ -117,23 +117,27 @@ def calcular_pruebas():
         # Procesar los resultados de las pruebas
         for test_id in selected_tests:
             if test_id == 1:
-                p_valor, es_aleatorio = monobit_test(bits)
+                p_valor, es_aleatorio = prueba_monobit(bits)
             elif test_id == 2:  # Block Frequency Test
                 binary_data = ''.join(map(str, bits))  # Convertir lista de bits a cadena binaria
                 p_valor = block_frequency(binary_data, block_size=128)  # Pasar la cadena binaria correctamente
                 es_aleatorio = p_valor >= 0.01  # Si p-valor >= 0.01 es aleatorio
             elif test_id == 3:
-                p_valor, es_aleatorio = longest_run_ones_test(bits)
+                # p_valor, es_aleatorio = longest_run_ones_test(bits)
+                p_valor, es_aleatorio = -1, False
             elif test_id == 4:
-                p_valor, es_aleatorio = longest_run_ones_test(bits)
+                p_valor, es_aleatorio = prueba_corrida_mas_larga(bits)
             elif test_id == 5:
-                p_valor, es_aleatorio = binary_matrix_rank_test(bits)
+                p_valor, es_aleatorio = prueba_rango_matriz_binaria(bits)
             elif test_id == 6:
-                p_valor, es_aleatorio = nist_discrete_fourier_transform(bits)
+                p_valor, es_aleatorio = transformada_fourier_discreta_nist(bits)
             elif test_id == 9:
                 p_valor, es_aleatorio = maurers_universal_statistical_test(bits)
             elif test_id == 10:
-                p_valor, es_aleatorio = linear_complexity_test(bits)
+                try:
+                    p_valor, es_aleatorio = prueba_complejidad_lineal(bits)
+                except Exception as e:
+                    p_valor, es_aleatorio = -1, False
             elif test_id == 12:
                 _, p_valor, es_aleatorio = approximate_entropy_test(bits)
             elif test_id == 8:  # Overlapping Template Matching Test
