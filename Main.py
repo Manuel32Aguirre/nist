@@ -11,7 +11,7 @@ from T9MaurersUniversalStatistical import maurers_universal_statistical_test
 from T8OverlappingTemplateMachine import overlappingTemplateMachine
 from T2FrecuencyWithinABlock import block_frequency
 from T13CumulativeSum import cumulative_sums_test
-
+#hola
 # Crear la ventana principal
 ventana = Tk()
 ventana.title("Pruebas NIST - Pruebas de Aleatoriedad")
