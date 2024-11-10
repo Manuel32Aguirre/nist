@@ -4,7 +4,7 @@ from scipy.special import gammaincc
 def longest_run_ones_test(bits, block_size=8):
     n = len(bits)
     if n < block_size:
-        raise ValueError("The length of the bit string must be at least as large as the block size.")
+        return -1, False
 
     # Determine the number of blocks
     num_blocks = n // block_size
