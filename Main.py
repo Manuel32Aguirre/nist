@@ -112,7 +112,7 @@ def calcular_pruebas():
             elif test_id == 6:
                 p_valor, es_aleatorio = nist_discrete_fourier_transform(bits)
             elif test_id == 9:
-                _, p_valor, es_aleatorio = maurers_universal_statistical_test(bits)
+                p_valor, es_aleatorio = maurers_universal_statistical_test(bits)
             elif test_id == 10:
                 try:
                     p_valor, es_aleatorio = linear_complexity_test(bits)
