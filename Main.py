@@ -10,13 +10,14 @@ from T6_Discrete_Fourier_transform import transformada_fourier_discreta_nist
 from T9MaurersUniversalStatistical import maurers_universal_statistical_test
 from T8OverlappingTemplateMachine import overlappingTemplateMachine
 from T2FrecuencyWithinABlock import block_frequency
+from T13CumulativeSum import cumulative_sums_test
 
 # Crear la ventana principal
-root = Tk()
-root.title("Pruebas NIST - Pruebas de Aleatoriedad")
-root.geometry("1200x1200")  # Ajusta el tamaño para hacerlo más largo y un poco más alto
-root.configure(bg="#2E2A47")  # Fondo oscuro suave
-root.resizable(True, True)  # Desactivar el redimensionamiento
+ventana = Tk()
+ventana.title("Pruebas NIST - Pruebas de Aleatoriedad")
+ventana.geometry("1200x1200")  # Ajusta el tamaño para hacerlo más largo y un poco más alto
+ventana.configure(bg="#2E2A47")  # Fondo oscuro suave
+ventana.resizable(True, True)  # Desactivar el redimensionamiento
 
 # Crear las variables para los resultados individuales
 resultados = {i: StringVar() for i in range(1, 16)}
@@ -26,93 +27,93 @@ aleatorio_texto = {i: StringVar() for i in range(1, 16)}
 check_vars = {i: IntVar() for i in range(1, 16)}
 
 # Crear el frame para las pruebas y resultados en formato de tabla
-frame = Frame(root, bg="#2E2A47", bd=1, relief="solid")
-frame.pack(pady=20)
+marco = Frame(ventana, bg="#2E2A47", bd=1, relief="solid")
+marco.pack(pady=20)
 
 # Configuración del estilo
-label_style = {"font": ("Helvetica", 12, "bold"), "fg": "#FFFFFF", "bg": "#3B2C6A", "bd": 1, "relief": "solid"}
-result_style = {"font": ("Helvetica", 12), "fg": "#F4C8FF", "bg": "#2E2A47", "bd": 1, "relief": "solid"}
+estilo_etiqueta = {"font": ("Helvetica", 12, "bold"), "fg": "#FFFFFF", "bg": "#3B2C6A", "bd": 1, "relief": "solid"}
+estilo_resultado = {"font": ("Helvetica", 12), "fg": "#F4C8FF", "bg": "#2E2A47", "bd": 1, "relief": "solid"}
 
 # Cabecera de la tabla, con bordes en las columnas
-Label(frame, text="Prueba", **label_style, width=50).grid(row=0, column=0, padx=5, pady=(0, 10), sticky="w")
-Label(frame, text="Resultado", **label_style, width=40).grid(row=0, column=1, padx=5, pady=(0, 10), sticky="w")
-Label(frame, text="Aleatoriedad", **label_style, width=20).grid(row=0, column=2, padx=5, pady=(0, 10), sticky="w")
+Label(marco, text="Prueba", **estilo_etiqueta, width=50).grid(row=0, column=0, padx=5, pady=(0, 10), sticky="w")
+Label(marco, text="Resultado", **estilo_etiqueta, width=40).grid(row=0, column=1, padx=5, pady=(0, 10), sticky="w")
+Label(marco, text="Aleatoriedad", **estilo_etiqueta, width=20).grid(row=0, column=2, padx=5, pady=(0, 10), sticky="w")
 
 # Lista de pruebas con identificadores
 pruebas = [
-    ("1. Frequency (Monobit) Test", 1),
-    ("2. Frequency Test within a Block", 2),
-    ("3. Runs Test", 3),
-    ("4. Longest Run of Ones in a Block Test", 4),
-    ("5. Binary Matrix Rank Test", 5),
-    ("6. Discrete Fourier Transform (Spectral) Test", 6),
-    ("7. Non-overlapping Template Matching Test", 7),
-    ("8. Overlapping Template Matching Test", 8),
-    ("9. Maurer's Universal Statistical Test", 9),
-    ("10. Linear Complexity Test", 10),
-    ("11. Serial Test", 11),
-    ("12. Approximate Entropy Test", 12),
-    ("13. Cumulative Sums (Cusum) Test", 13),
-    ("14. Random Excursions Test", 14),
-    ("15. Random Excursions Variant Test", 15),
+    ("1. Prueba de Frecuencia (Monobit)", 1),
+    ("2. Prueba de Frecuencia en un Bloque", 2),
+    ("3. Prueba de Corridas", 3),
+    ("4. Prueba del Longest Run de Unos", 4),
+    ("5. Prueba de Rango de Matriz Binaria", 5),
+    ("6. Prueba de Transformada Discreta de Fourier", 6),
+    ("7. Prueba de Plantillas no Superpuestas", 7),
+    ("8. Prueba de Plantillas Superpuestas", 8),
+    ("9. Prueba Estadística Universal de Maurer", 9),
+    ("10. Prueba de Complejidad Lineal", 10),
+    ("11. Prueba Serial", 11),
+    ("12. Prueba de Entropía Aproximada", 12),
+    ("13. Prueba de Sumas Cumulativas (Cusum)", 13),
+    ("14. Prueba de Excursiones Aleatorias", 14),
+    ("15. Prueba Variante de Excursiones Aleatorias", 15),
 ]
 
 # Agregar pruebas y sus resultados a la interfaz, con bordes en las columnas
-row = 1
-for label_text, test_id in pruebas:
-    Checkbutton(frame, text=label_text, variable=check_vars[test_id], font=("Helvetica", 12), bg="#2E2A47", fg="#F4C8FF", selectcolor="#3B2C6A", bd=1, relief="solid").grid(row=row, column=0, sticky="w", pady=5)
-    Label(frame, textvariable=resultados[test_id], **result_style, width=40, anchor="w").grid(row=row, column=1, pady=5)
-    Label(frame, textvariable=aleatorio_texto[test_id], **result_style, width=20, anchor="w").grid(row=row, column=2, pady=5)
-    row += 1
+fila = 1
+for texto_etiqueta, id_prueba in pruebas:
+    Checkbutton(marco, text=texto_etiqueta, variable=check_vars[id_prueba], font=("Helvetica", 12), bg="#2E2A47", fg="#F4C8FF", selectcolor="#3B2C6A", bd=1, relief="solid").grid(row=fila, column=0, sticky="w", pady=5)
+    Label(marco, textvariable=resultados[id_prueba], **estilo_resultado, width=40, anchor="w").grid(row=fila, column=1, pady=5)
+    Label(marco, textvariable=aleatorio_texto[id_prueba], **estilo_resultado, width=20, anchor="w").grid(row=fila, column=2, pady=5)
+    fila += 1
 
 # Entrada para la secuencia binaria (común para todas las pruebas)
-Label(root, text="Introduce una secuencia binaria:", font=("Helvetica", 14), fg="#F4C8FF", bg="#2E2A47").pack(pady=10)
-entrada_binario = Entry(root, width=50, font=("Helvetica", 14), bd=2, relief="solid")
+Label(ventana, text="Introduce una secuencia binaria:", font=("Helvetica", 14), fg="#F4C8FF", bg="#2E2A47").pack(pady=10)
+entrada_binario = Entry(ventana, width=50, font=("Helvetica", 14), bd=2, relief="solid")
 entrada_binario.pack(pady=10)
 
 # Entrada para la cantidad de bits aleatorios a generar (común para todas las pruebas)
-Label(root, text="Cantidad de bits aleatorios:", font=("Helvetica", 14), fg="#F4C8FF", bg="#2E2A47").pack(pady=10)
-entrada_cantidad_bits = Entry(root, width=10, font=("Helvetica", 14), bd=2, relief="solid")
+Label(ventana, text="Cantidad de bits aleatorios:", font=("Helvetica", 14), fg="#F4C8FF", bg="#2E2A47").pack(pady=10)
+entrada_cantidad_bits = Entry(ventana, width=10, font=("Helvetica", 14), bd=2, relief="solid")
 entrada_cantidad_bits.pack(pady=10)
 
 # Función para seleccionar un archivo binario
 def seleccionar_archivo():
-    file_path = filedialog.askopenfilename(filetypes=[("Text Files", "*.txt"), ("All Files", "*.*")])
-    if file_path:
-        with open(file_path, "r") as file:
-            binary_data = file.read().strip()
+    ruta_archivo = filedialog.askopenfilename(filetypes=[("Archivos de texto", "*.txt"), ("Todos los archivos", "*.*")])
+    if ruta_archivo:
+        with open(ruta_archivo, "r") as archivo:
+            datos_binarios = archivo.read().strip()
             entrada_binario.delete(0, "end")
-            entrada_binario.insert(0, binary_data)
+            entrada_binario.insert(0, datos_binarios)
 
 # Función para generar una secuencia binaria aleatoria
 def generar_binario_aleatorio():
     cantidad_bits = entrada_cantidad_bits.get()
     if cantidad_bits.isdigit():
         cantidad_bits = int(cantidad_bits)
-        random_bits = ''.join(random.choice('01') for _ in range(cantidad_bits))
+        bits_aleatorios = ''.join(random.choice('01') for _ in range(cantidad_bits))
         entrada_binario.delete(0, "end")
-        entrada_binario.insert(0, random_bits)
+        entrada_binario.insert(0, bits_aleatorios)
     else:
         entrada_binario.delete(0, "end")
         entrada_binario.insert(0, "Por favor, ingrese un número válido")
 
 # Botón para seleccionar un archivo binario
-boton_seleccionar_archivo = Button(root, text="Seleccionar Archivo Binario", command=seleccionar_archivo, font=("Helvetica", 14), bg="#3B2C6A", fg="white", bd=0, relief="flat")
+boton_seleccionar_archivo = Button(ventana, text="Seleccionar Archivo Binario", command=seleccionar_archivo, font=("Helvetica", 14), bg="#3B2C6A", fg="white", bd=0, relief="flat")
 boton_seleccionar_archivo.pack(pady=10)
 
 # Botón para generar binario aleatorio
-boton_generar_aleatorio = Button(root, text="Generar Binario Aleatorio", command=generar_binario_aleatorio, font=("Helvetica", 14), bg="#3B2C6A", fg="white", bd=0, relief="flat")
+boton_generar_aleatorio = Button(ventana, text="Generar Binario Aleatorio", command=generar_binario_aleatorio, font=("Helvetica", 14), bg="#3B2C6A", fg="white", bd=0, relief="flat")
 boton_generar_aleatorio.pack(pady=10)
-# Sección de la prueba Overlapping Template Matching
-overlapping_frame = Frame(root, bg="#2E2A47", bd=1, relief="solid")
-overlapping_frame.pack(pady=20, fill="x")
 
+# Sección de la prueba Overlapping Template Matching
+marco_overlapping = Frame(ventana, bg="#2E2A47", bd=1, relief="solid")
+marco_overlapping.pack(pady=20, fill="x")
 
 # Función para ejecutar las pruebas
 def calcular_pruebas():
-    selected_tests = [test_id for test_id, var in check_vars.items() if var.get() == 1]
-    if selected_tests:
-        bits = [int(b) for b in entrada_binario.get().strip()]  # Obtener la cadena de bits
+    pruebas_seleccionadas = [id_prueba for id_prueba, var in check_vars.items() if var.get() == 1]
+    if pruebas_seleccionadas:
+        bits = [int(b) for b in entrada_binario.get().strip()]
 
         # Procesar los resultados de las pruebas
         for test_id in selected_tests:
@@ -140,30 +141,30 @@ def calcular_pruebas():
                     p_valor, es_aleatorio = -1, False
             elif test_id == 12:
                 _, p_valor, es_aleatorio = approximate_entropy_test(bits)
-            elif test_id == 8:  # Overlapping Template Matching Test
-                binary_data = ''.join(map(str, bits))  # Convertir lista de bits a cadena binaria
-                p_valor, es_aleatorio = overlappingTemplateMachine(binary_data, verbose=False, pattern_size=9, block_size=1032)
+            elif id_prueba == 8:
+                datos_binarios = ''.join(map(str, bits))
+                p_valor, es_aleatorio = overlappingTemplateMachine(datos_binarios, verbose=False, pattern_size=9, block_size=1032)
+            elif id_prueba == 13:
+                datos_binarios = ''.join(map(str, bits))
+                p_valor, es_aleatorio = cumulative_sums_test(datos_binarios, mode=0, verbose=False)
 
             if p_valor is not None:
                 try:
-                    p_valor = float(p_valor)  # Asegurarse de convertir a float
-                    resultados[test_id].set(f"p-valor: {p_valor:.15f}")  # Formatear a 15 decimales
+                    p_valor = float(p_valor)
+                    resultados[id_prueba].set(f"p-valor: {p_valor:.15f}")
                 except ValueError:
-                    resultados[test_id].set("Error en el p-valor")
-                aleatorio_texto[test_id].set("Aleatorio" if es_aleatorio else "No Aleatorio")
+                    resultados[id_prueba].set("Error en el p-valor")
+                aleatorio_texto[id_prueba].set("Aleatorio" if es_aleatorio else "No Aleatorio")
             else:
-                resultados[test_id].set("Error en el p-valor")
-                aleatorio_texto[test_id].set("No disponible")
+                resultados[id_prueba].set("Error en el p-valor")
+                aleatorio_texto[id_prueba].set("No disponible")
     else:
         for var in resultados.values():
             var.set("Selecciona al menos una prueba.")
 
-
-
-
 # Botón para ejecutar las pruebas
-boton_calcular = Button(root, text="Calcular Pruebas", command=calcular_pruebas, font=("Helvetica", 14), bg="#3B2C6A", fg="white", bd=0, relief="flat")
+boton_calcular = Button(ventana, text="Calcular Pruebas", command=calcular_pruebas, font=("Helvetica", 14), bg="#3B2C6A", fg="white", bd=0, relief="flat")
 boton_calcular.pack(pady=10)
 
 # Ejecutar la interfaz gráfica
-root.mainloop()
+ventana.mainloop()
