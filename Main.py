@@ -9,6 +9,7 @@ from T5_binary_matrix import binary_matrix_rank_test
 from T6_Discrete_Fourier_transform import nist_discrete_fourier_transform
 from T9MaurersUniversalStatistical import maurers_universal_statistical_test
 from T8OverlappingTemplateMachine import overlappingTemplateMachine
+from T2FrecuencyWithinABlock import block_frequency
 
 # Crear la ventana principal
 root = Tk()
@@ -117,8 +118,10 @@ def calcular_pruebas():
         for test_id in selected_tests:
             if test_id == 1:
                 p_valor, es_aleatorio = monobit_test(bits)
-            elif test_id == 2:
-                p_valor, es_aleatorio = block_frequency_test(bits)
+            elif test_id == 2:  # Block Frequency Test
+                binary_data = ''.join(map(str, bits))  # Convertir lista de bits a cadena binaria
+                p_valor = block_frequency(binary_data, block_size=128)  # Pasar la cadena binaria correctamente
+                es_aleatorio = p_valor >= 0.01  # Si p-valor >= 0.01 es aleatorio
             elif test_id == 3:
                 p_valor, es_aleatorio = longest_run_ones_test(bits)
             elif test_id == 4:
@@ -133,7 +136,7 @@ def calcular_pruebas():
                 p_valor, es_aleatorio = linear_complexity_test(bits)
             elif test_id == 12:
                 _, p_valor, es_aleatorio = approximate_entropy_test(bits)
-            elif test_id == 8:  # Prueba de Overlapping Template Matching
+            elif test_id == 8:  # Overlapping Template Matching Test
                 binary_data = ''.join(map(str, bits))  # Convertir lista de bits a cadena binaria
                 p_valor, es_aleatorio = overlappingTemplateMachine(binary_data, verbose=False, pattern_size=9, block_size=1032)
 
@@ -150,6 +153,8 @@ def calcular_pruebas():
     else:
         for var in resultados.values():
             var.set("Selecciona al menos una prueba.")
+
+
 
 
 # Botón para ejecutar las pruebas

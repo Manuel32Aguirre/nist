@@ -6,14 +6,6 @@ from scipy.special import gammaincc
 from scipy.special import hyp1f1
 
 def overlappingTemplateMachine(binary_data: str, verbose=False, pattern_size=9, block_size=1032):
-    """
-    Overlapping Template Matching Test to detect the number of occurrences of pre-specified target strings.
-    :param binary_data: a binary string
-    :param verbose: True to display debug messages, False to turn off debug messages
-    :param pattern_size: the length of the pattern to match
-    :param block_size: the size of the block to test
-    :return: (p_value, bool) A tuple containing the p_value and a boolean indicating if the sequence is random.
-    """
     length_of_binary_data = len(binary_data)
     pattern = '1' * pattern_size
 
@@ -52,13 +44,6 @@ def overlappingTemplateMachine(binary_data: str, verbose=False, pattern_size=9, 
 
     p_value = gammaincc(5.0 / 2.0, xObs / 2.0)
 
-    if verbose:
-        print('Overlapping Template Test DEBUG BEGIN:')
-        print("\tLength of input:\t\t", length_of_binary_data)
-        print('\tValue of Vs:\t\t\t', pattern_counts)
-        print('\tValue of xObs:\t\t\t', xObs)
-        print('\tP-Value:\t\t\t\t', p_value)
-        print('DEBUG END.')
 
     return (p_value, (p_value >= 0.01))
 
@@ -68,12 +53,3 @@ def get_prob(u, x):
         out = 1.0 * x * exp(2 * -x) * (2 ** -u) * hyp1f1(u + 1, 2, x)
     return out
 
-# Ejemplo de datos binarios
-binary_data = '110010101010111100101010110011101001010111000111001010101001110010101010111100101010110011101001010111000111001010101001110010101010111100101010110011101001010111000111001010101001110010101010111100101010110011101001010111000111001010101001110010101010111100101010110011101001010111000111001010101001110010101010111100101010110011101001010111000111001010101001110010101010111100101010110011101001010111000111001010101001110010101010111100101010110011101001010111000111001010101001110010101010111100101010110011101001010111000111001010101001110010101010111100101010110011101001010111000111001010101001110010101010111100101010110011101001010111000111001010101001110010101010111100101010110011101001010111000111001010101001110010101010111100101010110011101001010111000111001010101001110010101010111100101010110011101001010111000111001010101001110010101010111100101010110011101001010111000111001010101001110010101010111100101010110011101001010111000111001010101001110010101010111100101010110011101001010111000111001010101001110010101010111100101010110011101001010111000111001010101001110010101010111100101010110011101001010111000111001010101001110010101010111100101010110011101001010111000111001010101001110010101010111100101010110011101001010111000111001010101001110010101010111100101010110011101001010111000111001010101001'  # un ejemplo de cadena binaria
-
-# Llamada a la función overlapping_patterns
-p_value, is_random = overlappingTemplateMachine(binary_data, verbose=True, pattern_size=9, block_size=1032)
-
-# Imprimir los resultados
-print(f"P-Value: {p_value}")
-print(f"Is the sequence random? {is_random}")
