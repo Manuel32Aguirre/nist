@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.linalg import lu
-def prueba_rango_matriz_binaria(datos_binarios, tamano_matriz=32):
+def prueba_rango_matriz_binaria(datos_binarios, tamano_matriz):
     n = len(datos_binarios)
     if n < tamano_matriz * tamano_matriz:
         return -1, False
