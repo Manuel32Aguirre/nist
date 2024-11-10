@@ -8,13 +8,14 @@ from T12ApproximateEntropy import approximate_entropy_test
 from T5_binary_matrix import binary_matrix_rank_test
 from T6_Discrete_Fourier_transform import nist_discrete_fourier_transform
 from T9MaurersUniversalStatistical import maurers_universal_statistical_test
+from T8OverlappingTemplateMachine import overlappingTemplateMachine
 
 # Crear la ventana principal
 root = Tk()
 root.title("Pruebas NIST - Pruebas de Aleatoriedad")
-root.geometry("1200x900")  # Ajusta el tamaño para hacerlo más largo y un poco más alto
+root.geometry("1200x1200")  # Ajusta el tamaño para hacerlo más largo y un poco más alto
 root.configure(bg="#2E2A47")  # Fondo oscuro suave
-root.resizable(False, False)  # Desactivar el redimensionamiento
+root.resizable(True, True)  # Desactivar el redimensionamiento
 
 # Crear las variables para los resultados individuales
 resultados = {i: StringVar() for i in range(1, 16)}
@@ -63,10 +64,15 @@ for label_text, test_id in pruebas:
     Label(frame, textvariable=aleatorio_texto[test_id], **result_style, width=20, anchor="w").grid(row=row, column=2, pady=5)
     row += 1
 
-# Entrada para la secuencia binaria
+# Entrada para la secuencia binaria (común para todas las pruebas)
 Label(root, text="Introduce una secuencia binaria:", font=("Helvetica", 14), fg="#F4C8FF", bg="#2E2A47").pack(pady=10)
 entrada_binario = Entry(root, width=50, font=("Helvetica", 14), bd=2, relief="solid")
 entrada_binario.pack(pady=10)
+
+# Entrada para la cantidad de bits aleatorios a generar (común para todas las pruebas)
+Label(root, text="Cantidad de bits aleatorios:", font=("Helvetica", 14), fg="#F4C8FF", bg="#2E2A47").pack(pady=10)
+entrada_cantidad_bits = Entry(root, width=10, font=("Helvetica", 14), bd=2, relief="solid")
+entrada_cantidad_bits.pack(pady=10)
 
 # Función para seleccionar un archivo binario
 def seleccionar_archivo():
@@ -79,10 +85,15 @@ def seleccionar_archivo():
 
 # Función para generar una secuencia binaria aleatoria
 def generar_binario_aleatorio():
-    # Generar una secuencia de 1000 bits aleatorios (suficiente para la prueba de Maurer)
-    random_bits = ''.join(random.choice('01') for _ in range(1000))
-    entrada_binario.delete(0, "end")
-    entrada_binario.insert(0, random_bits)
+    cantidad_bits = entrada_cantidad_bits.get()
+    if cantidad_bits.isdigit():
+        cantidad_bits = int(cantidad_bits)
+        random_bits = ''.join(random.choice('01') for _ in range(cantidad_bits))
+        entrada_binario.delete(0, "end")
+        entrada_binario.insert(0, random_bits)
+    else:
+        entrada_binario.delete(0, "end")
+        entrada_binario.insert(0, "Por favor, ingrese un número válido")
 
 # Botón para seleccionar un archivo binario
 boton_seleccionar_archivo = Button(root, text="Seleccionar Archivo Binario", command=seleccionar_archivo, font=("Helvetica", 14), bg="#3B2C6A", fg="white", bd=0, relief="flat")
@@ -91,45 +102,55 @@ boton_seleccionar_archivo.pack(pady=10)
 # Botón para generar binario aleatorio
 boton_generar_aleatorio = Button(root, text="Generar Binario Aleatorio", command=generar_binario_aleatorio, font=("Helvetica", 14), bg="#3B2C6A", fg="white", bd=0, relief="flat")
 boton_generar_aleatorio.pack(pady=10)
+# Sección de la prueba Overlapping Template Matching
+overlapping_frame = Frame(root, bg="#2E2A47", bd=1, relief="solid")
+overlapping_frame.pack(pady=20, fill="x")
 
-# Función para ejecutar pruebas seleccionadas
+
+# Función para ejecutar las pruebas
 def calcular_pruebas():
     selected_tests = [test_id for test_id, var in check_vars.items() if var.get() == 1]
     if selected_tests:
-        bits = [int(b) for b in entrada_binario.get().strip()]
-        
-        # Ejecutar pruebas seleccionadas
+        bits = [int(b) for b in entrada_binario.get().strip()]  # Obtener la cadena de bits
+
+        # Procesar los resultados de las pruebas
         for test_id in selected_tests:
             if test_id == 1:
                 p_valor, es_aleatorio = monobit_test(bits)
+            elif test_id == 2:
+                p_valor, es_aleatorio = block_frequency_test(bits)
+            elif test_id == 3:
+                p_valor, es_aleatorio = longest_run_ones_test(bits)
             elif test_id == 4:
                 p_valor, es_aleatorio = longest_run_ones_test(bits)
             elif test_id == 5:
-                try:
-                    p_valor, es_aleatorio = binary_matrix_rank_test(bits, matrix_size=32)
-                except ValueError:
-                    p_valor, es_aleatorio = 0.01, False
+                p_valor, es_aleatorio = binary_matrix_rank_test(bits)
             elif test_id == 6:
                 p_valor, es_aleatorio = nist_discrete_fourier_transform(bits)
             elif test_id == 9:
                 p_valor, es_aleatorio = maurers_universal_statistical_test(bits)
             elif test_id == 10:
-                try:
-                    p_valor, es_aleatorio = linear_complexity_test(bits)
-                except ValueError:
-                    p_valor, es_aleatorio = 0.01, False
+                p_valor, es_aleatorio = linear_complexity_test(bits)
             elif test_id == 12:
                 _, p_valor, es_aleatorio = approximate_entropy_test(bits)
+            elif test_id == 8:  # Prueba de Overlapping Template Matching
+                binary_data = ''.join(map(str, bits))  # Convertir lista de bits a cadena binaria
+                p_valor, es_aleatorio = overlappingTemplateMachine(binary_data, verbose=False, pattern_size=9, block_size=1032)
+
+            if p_valor is not None:
+                try:
+                    p_valor = float(p_valor)  # Asegurarse de convertir a float
+                    resultados[test_id].set(f"p-valor: {p_valor:.15f}")  # Formatear a 15 decimales
+                except ValueError:
+                    resultados[test_id].set("Error en el p-valor")
+                aleatorio_texto[test_id].set("Aleatorio" if es_aleatorio else "No Aleatorio")
             else:
-                # Aquí se deben implementar y llamar las funciones para las demás pruebas
-                p_valor, es_aleatorio = 0.01, False  # Valores de ejemplo
-            
-            # Actualizar resultados en la interfaz
-            resultados[test_id].set(f"p-valor: {p_valor:.15f}")
-            aleatorio_texto[test_id].set("Aleatorio" if es_aleatorio else "No Aleatorio")
+                resultados[test_id].set("Error en el p-valor")
+                aleatorio_texto[test_id].set("No disponible")
     else:
         for var in resultados.values():
             var.set("Selecciona al menos una prueba.")
+
 
 # Botón para ejecutar las pruebas
 boton_calcular = Button(root, text="Calcular Pruebas", command=calcular_pruebas, font=("Helvetica", 14), bg="#3B2C6A", fg="white", bd=0, relief="flat")

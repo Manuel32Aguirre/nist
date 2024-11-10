@@ -40,14 +40,3 @@ def maurers_universal_statistical_test(binary_data):
     is_random = p_value >= 0.01
 
     return p_value, is_random
-
-if __name__ == "__main__":
-    # Secuencia binaria de ejemplo
-    binary_data = [random.randint(0, 1) for _ in range(1000)]
-
-    # Llamada a la función
-    p_valor, es_aleatorio = maurers_universal_statistical_test(binary_data)
-
-    # Imprimir resultados
-    print(f"P-valor: {p_valor}")
-    print(f"Es aleatorio: {es_aleatorio}")
