@@ -141,23 +141,23 @@ def calcular_pruebas():
                     p_valor, es_aleatorio = -1, False
             elif test_id == 12:
                 _, p_valor, es_aleatorio = approximate_entropy_test(bits)
-            elif id_prueba == 8:
+            elif test_id == 8:
                 datos_binarios = ''.join(map(str, bits))
                 p_valor, es_aleatorio = overlappingTemplateMachine(datos_binarios, verbose=False, pattern_size=9, block_size=1032)
-            elif id_prueba == 13:
+            elif test_id == 13:
                 datos_binarios = ''.join(map(str, bits))
                 p_valor, es_aleatorio = cumulative_sums_test(datos_binarios, mode=0, verbose=False)
 
             if p_valor is not None:
                 try:
                     p_valor = float(p_valor)
-                    resultados[id_prueba].set(f"p-valor: {p_valor:.15f}")
+                    resultados[test_id].set(f"p-valor: {p_valor:.15f}")
                 except ValueError:
-                    resultados[id_prueba].set("Error en el p-valor")
-                aleatorio_texto[id_prueba].set("Aleatorio" if es_aleatorio else "No Aleatorio")
+                    resultados[test_id].set("Error en el p-valor")
+                aleatorio_texto[test_id].set("Aleatorio" if es_aleatorio else "No Aleatorio")
             else:
-                resultados[id_prueba].set("Error en el p-valor")
-                aleatorio_texto[id_prueba].set("No disponible")
+                resultados[test_id].set("Error en el p-valor")
+                aleatorio_texto[test_id].set("No disponible")
     else:
         for var in resultados.values():
             var.set("Selecciona al menos una prueba.")
