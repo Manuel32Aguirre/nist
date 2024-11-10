@@ -116,7 +116,7 @@ def calcular_pruebas():
         bits = [int(b) for b in entrada_binario.get().strip()]
 
         # Procesar los resultados de las pruebas
-        for test_id in selected_tests:
+        for test_id in pruebas_seleccionadas:
             if test_id == 1:
                 p_valor, es_aleatorio = prueba_monobit(bits)
             elif test_id == 2:  # Block Frequency Test
