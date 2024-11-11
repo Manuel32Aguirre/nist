@@ -17,6 +17,7 @@ from T13CumulativeSum import cumulative_sums_test
 from T14_random_excursion_test import random_excursion_test
 from T15_random_excursion_variant_test import random_excursion_variant_test
 
+
 def seleccionar_archivo(entrada_binario):
     file_path = filedialog.askopenfilename(filetypes=[("Text Files", "*.txt"), ("All Files", "*.*")])
     if file_path:
@@ -37,6 +38,10 @@ def generarbinario_aleatorio(entrada_cantidad_bits, entrada_binario):
         entrada_binario.insert(0, "Por favor, ingrese un número válido")
 
 # Función para realizar las pruebas
+from tkinter import Text  # Asegúrate de importar Text
+
+from tkinter import Text  # Asegúrate de importar Text
+
 def calcular_pruebas(bits, selected_tests, resultados, aleatorio_texto, frame_canvas):
     esLista = 0
     if selected_tests:
@@ -104,9 +109,13 @@ def calcular_pruebas(bits, selected_tests, resultados, aleatorio_texto, frame_ca
 
             # Actualizar resultados
             if esLista == 1:
-                resultados[test_id].set('\n'.join([f"p-valor: {p:.15f}" for p in p_valor_lista]))
+                # Limpiar el widget de texto antes de insertar nuevos p-valores
+                resultados[test_id].delete(1.0, "end")  # Limpiar el Text widget
+                resultados[test_id].insert("1.0", '\n'.join([f"p-valor: {p:.15f}" for p in p_valor_lista]))  # Mostrar los p-valores
             else:
+                # Para pruebas con un solo p-valor, simplemente mostramos uno
                 resultados[test_id].set(f"p-valor: {p_valor:.15f}")
+            
             aleatorio_texto[test_id].set("Aleatorio" if es_aleatorio else "No Aleatorio")
         
         # Actualizar el tamaño del canvas
