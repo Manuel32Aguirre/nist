@@ -1,6 +1,7 @@
-from tkinter import Tk, Label, Button, Entry, StringVar, Checkbutton, IntVar, Frame, filedialog, Canvas, Scrollbar, Text
-import random
-from funciones import calcular_pruebas
+from tkinter import Tk, Label, Button, Entry, StringVar, IntVar, Frame, Text, Toplevel, messagebox, PhotoImage, Checkbutton
+import os
+from funciones import abrir_modal_config, guardar_valor_m, cargar_valor_m, seleccionar_todo
+from T2FrecuencyWithinABlock import block_frequency
 
 # Crear la ventana principal
 root = Tk()
@@ -10,49 +11,38 @@ root.configure(bg="#2E2A47")
 root.state('zoomed')  # Maximizar la ventana
 root.resizable(False, False)  # Desactivar el redimensionamiento
 
-# Crear un Canvas con Scrollbar principal
-main_canvas = Canvas(root, bg="#2E2A47")
-main_scrollbar = Scrollbar(root, orient="vertical", command=main_canvas.yview)
-main_canvas.config(yscrollcommand=main_scrollbar.set)
+# Cargar imagen para el botón de configuración
+config_image = PhotoImage(file="config.png").subsample(25, 25)  # Ajustar tamaño de la imagen
 
-# Crear un frame dentro del canvas principal
-main_frame = Frame(main_canvas, bg="#2E2A47")
-main_canvas.create_window((0, 0), window=main_frame, anchor="nw")
+# Crear el frame principal
+main_frame = Frame(root, bg="#2E2A47")
+main_frame.pack(fill="both", expand=True)
 
-# Configurar el scrollbar principal
-main_scrollbar.pack(side="right", fill="y")
-main_canvas.pack(side="left", fill="both", expand=True)
-
-# Crear las variables para los resultados individuales
+# Crear las variables para los resultados de las pruebas (p-valores)
 resultados = {i: StringVar() for i in range(1, 16)}
 aleatorio_texto = {i: StringVar() for i in range(1, 16)}
 
-# Crear las variables para los Checkbuttons
+# Crear las variables para los Checkbuttons (selección de pruebas)
 check_vars = {i: IntVar() for i in range(1, 16)}
 
 # Crear el frame para las pruebas
-frame = Frame(main_frame, bg="#2E2A47", bd=1, relief="solid")
-frame.pack(pady=20)
+frame_pruebas = Frame(main_frame, bg="#2E2A47", bd=1, relief="solid")
+frame_pruebas.pack(side="left", padx=30, pady=20, fill="both", expand=True)  # Añadido un margen de 30px
 
-# Configuración del estilo
+# Configuración del estilo para etiquetas y resultados
 label_style = {"font": ("Helvetica", 12, "bold"), "fg": "#FFFFFF", "bg": "#3B2C6A", "bd": 1, "relief": "solid"}
 result_style = {"font": ("Helvetica", 12), "fg": "#F4C8FF", "bg": "#2E2A47", "bd": 1, "relief": "solid"}
 
-# Crear un Canvas con Scrollbar para las pruebas
-canvas = Canvas(frame, bg="#2E2A47", height=500, width=1100)
-scrollbar = Scrollbar(frame, orient="vertical", command=canvas.yview)
-canvas.config(yscrollcommand=scrollbar.set)
+# Crear el frame donde se mostrarán las pruebas y resultados
+frame_canvas_pruebas = Frame(frame_pruebas, bg="#2E2A47")
+frame_canvas_pruebas.pack(fill="both", expand=True)
 
-# Crear un frame dentro del canvas para almacenar las etiquetas
-frame_canvas = Frame(canvas, bg="#2E2A47")
-canvas.create_window((0, 0), window=frame_canvas, anchor="nw")
+# Colocar las cabeceras
+Label(frame_canvas_pruebas, text="Prueba", **label_style, width=45).grid(row=0, column=0, padx=5, pady=(0, 10), sticky="w")
+Label(frame_canvas_pruebas, text="Resultado", **label_style, width=40).grid(row=0, column=1, padx=5, pady=(0, 10), sticky="w")
+Label(frame_canvas_pruebas, text="Aleatoriedad", **label_style, width=20).grid(row=0, column=2, padx=5, pady=(0, 10), sticky="w")
 
-# Colocar las cabeceras en el canvas
-Label(frame_canvas, text="Prueba", **label_style, width=50).grid(row=0, column=0, padx=5, pady=(0, 10), sticky="w")
-Label(frame_canvas, text="Resultado", **label_style, width=40).grid(row=0, column=1, padx=5, pady=(0, 10), sticky="w")
-Label(frame_canvas, text="Aleatoriedad", **label_style, width=20).grid(row=0, column=2, padx=5, pady=(0, 10), sticky="w")
-
-# Lista de pruebas con identificadores
+# Lista de pruebas con sus identificadores
 pruebas = [
     ("1. Frequency (Monobit) Test", 1),
     ("2. Frequency Test within a Block", 2),
@@ -71,85 +61,76 @@ pruebas = [
     ("15. Random Excursions Variant Test", 15),
 ]
 
-# Agregar las pruebas y sus resultados dentro del Canvas
+# Agregar las pruebas y sus resultados
 row = 1
 for label_text, test_id in pruebas:
-    Checkbutton(frame_canvas, text=label_text, variable=check_vars[test_id], font=("Helvetica", 12), bg="#2E2A47", fg="#F4C8FF", selectcolor="#3B2C6A", bd=1, relief="solid").grid(row=row, column=0, sticky="w", pady=5)
-    if test_id == 14:
-        text_widget = Text(frame_canvas, height=5, width=40, font=("Helvetica", 12), fg="#F4C8FF", bg="#2E2A47", bd=1, relief="solid")
+    # Botón de configuración
+    if test_id == 2:  # Añadir el modal solo al botón de la prueba 2
+        Button(frame_canvas_pruebas, image=config_image, bg="#2E2A47", bd=0, command=lambda: abrir_modal_config(root)).grid(row=row, column=0, sticky="w", padx=(0, 5), pady=5)
+    else:
+        Button(frame_canvas_pruebas, image=config_image, bg="#2E2A47", bd=0).grid(row=row, column=0, sticky="w", padx=(0, 5), pady=5)
+
+    # Checkbutton para seleccionar pruebas
+    Checkbutton(frame_canvas_pruebas, text=label_text, variable=check_vars[test_id], font=("Helvetica", 12), bg="#2E2A47", fg="#F4C8FF", selectcolor="#3B2C6A", bd=1, relief="solid").grid(row=row, column=0, sticky="w", padx=(30, 5), pady=5)
+
+    # Mostrar el resultado
+    if test_id == 14 or test_id == 15:
+        text_widget = Text(frame_canvas_pruebas, height=5, width=40, font=("Helvetica", 12), fg="#F4C8FF", bg="#2E2A47", bd=1, relief="solid")
         text_widget.grid(row=row, column=1, pady=5)
         resultados[test_id] = text_widget
     else:
-        Label(frame_canvas, textvariable=resultados[test_id], **result_style, width=40, anchor="w").grid(row=row, column=1, pady=5)
-    Label(frame_canvas, textvariable=aleatorio_texto[test_id], **result_style, width=20, anchor="w").grid(row=row, column=2, pady=5)
+        Label(frame_canvas_pruebas, textvariable=resultados[test_id], **result_style, width=40, anchor="w").grid(row=row, column=1, pady=5)
+
+    # Mostrar si el resultado es aleatorio o no
+    Label(frame_canvas_pruebas, textvariable=aleatorio_texto[test_id], **result_style, width=20, anchor="w").grid(row=row, column=2, pady=5)
     row += 1
 
-# Actualizar el tamaño del canvas para permitir el desplazamiento
-frame_canvas.update_idletasks()
-canvas.config(scrollregion=canvas.bbox("all"))
+# Función para ejecutar la prueba 2 y actualizar el resultado en la interfaz
+def ejecutar_prueba_2():
+    secuencia_binaria = entrada_binario.get()  # Obtener la secuencia binaria de la entrada
+    valor_m = cargar_valor_m()  # Cargar el valor M desde el archivo
+    if secuencia_binaria and valor_m:  # Verificar que la secuencia no esté vacía y que el valor M esté cargado
+        try:
+            valor_m = int(valor_m)  # Convertir valor_m a entero
+        except ValueError:
+            messagebox.showerror("Error", "El valor de M no es un número válido.")
+            return  # Salir de la función si el valor de M no es válido
 
-# Configurar el scrollbar
-scrollbar.config(command=canvas.yview)
+        p_val, is_random = block_frequency(secuencia_binaria, valor_m)
 
-# Colocar el scrollbar y el canvas en el frame
-canvas.pack(side="left", fill="both", expand=True)
-scrollbar.pack(side="right", fill="y")
+        # Actualizar el resultado de la prueba 2 en el Label correspondiente
+        resultados[2].set(f"P-valor: {p_val:.30f}")  # Formateamos el p-valor a 5 decimales
+        aleatorio_texto[2].set("Aleatorio" if is_random else "No Aleatorio")  # Dependiendo de 'is_random', actualizamos el texto
 
-# Entrada para la secuencia binaria
-Label(main_frame, text="Introduce una secuencia binaria:", font=("Helvetica", 14), fg="#F4C8FF", bg="#2E2A47").pack(pady=10)
-entrada_binario = Entry(main_frame, width=50, font=("Helvetica", 14), bd=2, relief="solid")
+
+
+# Función para ejecutar todas las pruebas seleccionadas
+def ejecutar_pruebas_seleccionadas():
+    for test_id, var in check_vars.items():
+        if var.get() == 1:  # Si la prueba está seleccionada
+            if test_id == 2:  # Ejecutar la prueba 2
+                ejecutar_prueba_2()
+            # Agregar más condiciones para otras pruebas según se necesite
+
+# Frame para los controles de la columna derecha (ingreso de binario y botones)
+frame_controls = Frame(main_frame, bg="#2E2A47", bd=1, relief="solid", width=300)
+frame_controls.pack(side="right", padx=10, pady=20, fill="y")
+
+# Apilar los controles en el lado derecho
+frame_controls.columnconfigure(0, weight=1)
+frame_controls.columnconfigure(1, weight=1)
+
+# Crear los widgets en el frame de controles y apilarlos
+Label(frame_controls, text="Introduce una secuencia binaria:", font=("Helvetica", 14), fg="#F4C8FF", bg="#2E2A47").pack(pady=10)
+entrada_binario = Entry(frame_controls, width=30, font=("Helvetica", 14), bd=2, relief="solid")
 entrada_binario.pack(pady=10)
 
-Label(main_frame, text="Cantidad de bits aleatorios:", font=("Helvetica", 14), fg="#F4C8FF", bg="#2E2A47").pack(pady=10)
-entrada_cantidad_bits = Entry(main_frame, width=10, font=("Helvetica", 14), bd=2, relief="solid")
+Label(frame_controls, text="Cantidad de bits aleatorios:", font=("Helvetica", 14), fg="#F4C8FF", bg="#2E2A47").pack(pady=10)
+entrada_cantidad_bits = Entry(frame_controls, width=10, font=("Helvetica", 14), bd=2, relief="solid")
 entrada_cantidad_bits.pack(pady=10)
 
-# Función para seleccionar un archivo binario
-def seleccionar_archivo():
-    file_path = filedialog.askopenfilename(filetypes=[("Text Files", "*.txt"), ("All Files", "*.*")])
-    if file_path:
-        with open(file_path, "r") as file:
-            binary_data = file.read().strip()
-            entrada_binario.delete(0, "end")
-            entrada_binario.insert(0, binary_data)
+Button(frame_controls, text="Ejecutar Pruebas Seleccionadas", font=("Helvetica", 14), bg="#3B2C6A", fg="white", width=25, command=ejecutar_pruebas_seleccionadas).pack(pady=10)
+Button(frame_controls, text="Generar Secuencia Aleatoria", font=("Helvetica", 14), bg="#3B2C6A", fg="white", width=25).pack(pady=10)
 
-# Función para generar una secuencia binaria aleatoria
-def generarbinario_aleatorio():
-    cantidad_bits = entrada_cantidad_bits.get()
-    if cantidad_bits.isdigit():
-        cantidad_bits = int(cantidad_bits)
-        bits_aleatorios = ''.join(random.choice('01') for _ in range(cantidad_bits))
-        entrada_binario.delete(0, "end")
-        entrada_binario.insert(0, bits_aleatorios)
-    else:
-        entrada_binario.delete(0, "end")
-        entrada_binario.insert(0, "Por favor, ingrese un número válido")
-
-# Crear un frame para los botones
-botones_frame = Frame(main_frame, bg="#2E2A47")
-botones_frame.pack(pady=20)
-
-# Botón para seleccionar un archivo binario
-boton_seleccionar_archivo = Button(botones_frame, text="Seleccionar Archivo Binario", command=seleccionar_archivo, font=("Helvetica", 14), bg="#3B2C6A", fg="white", bd=0, relief="flat")
-boton_seleccionar_archivo.grid(row=0, column=0, padx=10)
-
-# Botón para generar binario aleatorio
-boton_generar_aleatorio = Button(botones_frame, text="Generar Binario Aleatorio", command=generarbinario_aleatorio, font=("Helvetica", 14), bg="#3B2C6A", fg="white", bd=0, relief="flat")
-boton_generar_aleatorio.grid(row=0, column=1, padx=10)
-
-# Función para ejecutar las pruebas seleccionadas
-def realizar_pruebas():
-    bits = [int(b) for b in entrada_binario.get().strip()]
-    selected_tests = [test_id for test_id in check_vars if check_vars[test_id].get() == 1]
-    calcular_pruebas(bits, selected_tests, resultados, aleatorio_texto, frame_canvas)
-
-# Botón para ejecutar las pruebas
-boton_calcular = Button(botones_frame, text="Calcular Pruebas", command=realizar_pruebas, font=("Helvetica", 14), bg="#3B2C6A", fg="white", bd=0, relief="flat")
-boton_calcular.grid(row=0, column=2, padx=10)
-
-# Actualizar el tamaño del canvas principal para permitir el desplazamiento
-main_frame.update_idletasks()
-main_canvas.config(scrollregion=main_canvas.bbox("all"))
-
-# Ejecutar la interfaz gráfica
+# Iniciar el loop de la interfaz gráfica
 root.mainloop()

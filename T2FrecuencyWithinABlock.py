@@ -1,5 +1,6 @@
 import math
 import scipy.special as spc
+
 def block_frequency(bin_data: str, block_size=128):
     num_blocks = math.floor(len(bin_data) / block_size)
     block_start, block_end = 0, block_size
@@ -21,4 +22,8 @@ def block_frequency(bin_data: str, block_size=128):
     # Calculate the p-value
     chi_squared = 4.0 * block_size * proportion_sum
     p_val = spc.gammaincc(num_blocks / 2, chi_squared / 2)
-    return p_val
+    
+    # Determine if the sequence is random (True) or not (False)
+    is_random = p_val > 0.01
+    return p_val, is_random
+
