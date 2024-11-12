@@ -4,6 +4,7 @@ from numpy import exp
 from numpy import zeros
 from scipy.special import gammaincc
 from scipy.special import hyp1f1
+from mpmath import mp
 
 def overlappingTemplateMachine(binary_data: str, verbose=False, pattern_size=9, block_size=1032):
     length_of_binary_data = len(binary_data)
@@ -53,3 +54,13 @@ def get_prob(u, x):
         out = 1.0 * x * exp(2 * -x) * (2 ** -u) * hyp1f1(u + 1, 2, x)
     return out
 
+def obtener_expansion_binaria_e(bits):
+    # Establecer precisión a bits + 2 para asegurar exactitud
+    mp.dps = bits + 2
+    e = mp.e  # Obtener el valor de e con la precisión definida
+    binario_e = bin(int(e * (2 ** bits)))[2:].zfill(bits)  # Convertir a binario
+    return binario_e
+
+# Generar la expansión binaria de e con 1,000,000 de bits
+binary_e = obtener_expansion_binaria_e(1000000)
+print(overlappingTemplateMachine(binary_e))

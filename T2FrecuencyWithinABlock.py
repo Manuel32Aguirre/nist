@@ -26,4 +26,3 @@ def block_frequency(bin_data: str, block_size=128):
     # Determine if the sequence is random (True) or not (False)
     is_random = p_val > 0.01
     return p_val, is_random
-
