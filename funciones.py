@@ -212,3 +212,33 @@ def abrir_modal_config_prueba_9(root):
 
     # Botón para guardar la configuración
     Button(modal, text="Guardar", font=("Helvetica", 12), bg="#3B2C6A", fg="white", command=guardar_y_cerrar).pack(pady=10)
+
+def abrir_modal_config_prueba_12(root):
+    modal = Toplevel(root)
+    modal.title("Configuración de Prueba 12")
+    modal.geometry("300x250")
+    modal.configure(bg="#2E2A47")
+
+    frame_entrada = Frame(modal, bg="#2E2A47")
+    frame_entrada.pack(pady=10)
+    
+    # Etiqueta y campo de entrada para el valor de entropía
+    Label(frame_entrada, text="M:", font=("Helvetica", 14), fg="#F4C8FF", bg="#2E2A47").pack(side="left")
+    entrada_entropia = Entry(frame_entrada, width=10, font=("Helvetica", 14), bd=2, relief="solid")
+    entrada_entropia.pack(side="left", padx=5)
+    entrada_entropia.insert(0, cargar_valor("configuracionDePruebas/configT12.txt"))
+
+    # Función para guardar el valor de entropía y cerrar el modal
+    def guardar_y_cerrar():
+        valor_entropia = entrada_entropia.get()
+        try:
+            # Convertir a float para verificar que sea un valor numérico válido
+            valor_m = int(valor_entropia)
+            guardar_valor(str(valor_m), "configuracionDePruebas/configT12.txt")
+            modal.destroy()
+            messagebox.showinfo("Configuración Guardada", "Valor de entropía guardado.")
+        except ValueError:
+            messagebox.showerror("Error", "Por favor, ingrese un valor numérico válido para la entropía.")
+
+    # Botón para guardar la configuración
+    Button(modal, text="Guardar", font=("Helvetica", 12), bg="#3B2C6A", fg="white", command=guardar_y_cerrar).pack(pady=10)
