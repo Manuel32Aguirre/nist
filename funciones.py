@@ -4,6 +4,7 @@ import random
 from T2FrecuencyWithinABlock import block_frequency
 import mpmath as mp
 from T8OverlappingTemplateMatching import obtener_expansion_binaria_e, overlappingTemplateMachine
+from T9MaurersUniversalStatistical import universal_test
 
 def guardar_valor(valor, archivo):
     with open(archivo, "w") as file:
@@ -115,12 +116,40 @@ def ejecutar_prueba_8(secuencia_binaria, resultados, aleatorio_texto):
     else:
         messagebox.showerror("Error", "La secuencia o el patrón no son válidos.")
 
+def ejecutar_prueba_9(secuencia_binaria, resultados, aleatorio_texto):
+    # Cargar los valores de L y Q desde el archivo
+    try:
+        with open("configuracionDePruebas/configT9.txt", "r") as file:
+            L = int(file.readline().strip())  # Leer el primer renglón como L
+            Q = int(file.readline().strip())  # Leer el segundo renglón como Q
+    except Exception as e:
+        messagebox.showerror("Error", f"No se pudo leer el archivo de configuración: {e}")
+        return
+
+    # Limpiar la secuencia binaria de saltos de línea y espacios innecesarios
+    secuencia_binaria_sin_saltos = secuencia_binaria.replace("\n", "").replace(" ", "")
+    
+    if secuencia_binaria_sin_saltos and L > 0 and Q > 0:
+        # Llamar a la función universal_test con epsilon (secuencia binaria), L y Q
+        p_val, is_random = universal_test(secuencia_binaria_sin_saltos, L, Q)
+        
+        # Mostrar el p-valor en los resultados
+        resultados[9].set(f"P-valor: {p_val:.17f}")
+        
+        # Indicar si la secuencia es aleatoria o no
+        aleatorio_texto[9].set("Aleatorio" if is_random else "No Aleatorio")
+    else:
+        messagebox.showerror("Error", "La secuencia binaria o los valores de L y Q no son válidos.")
+
+
 def ejecutar_pruebas_seleccionadas(check_vars, entrada_binario, resultados, aleatorio_texto):
     secuencia_binaria = entrada_binario.get("1.0", "end-1c")
     if check_vars[2].get():
         ejecutar_prueba_2(secuencia_binaria, resultados, aleatorio_texto)
     if check_vars[8].get():
         ejecutar_prueba_8(secuencia_binaria, resultados, aleatorio_texto)
+    if check_vars[9].get():  # Verifica si la prueba 9 está seleccionada
+        ejecutar_prueba_9(secuencia_binaria, resultados, aleatorio_texto)  # Llamada a la función de la prueba 9
 
 def generar_secuencia_aleatoria(entrada_cantidad_bits, entrada_binario, max_line_length=60):
     cantidad_bits = entrada_cantidad_bits.get()
@@ -137,3 +166,49 @@ def on_paste(entry_widget, event):
     entry_widget.delete("1.0", "end")
     entry_widget.insert("1.0", texto_limpio)
     return "break"
+
+def abrir_modal_config_prueba_9(root):
+    modal = Toplevel(root)
+    modal.title("Configuración de Prueba 9")
+    modal.geometry("300x250")
+    modal.configure(bg="#2E2A47")
+
+    frame_entrada = Frame(modal, bg="#2E2A47")
+    frame_entrada.pack(pady=10)
+
+    # Campo para L
+    Label(frame_entrada, text="L:", font=("Helvetica", 14), fg="#F4C8FF", bg="#2E2A47").pack(side="left")
+    entrada_l = Entry(frame_entrada, width=10, font=("Helvetica", 14), bd=2, relief="solid")
+    entrada_l.pack(side="left", padx=5)
+
+    # Cargar valor de L desde el archivo
+    valor_l = cargar_valor("configuracionDePruebas/configT9.txt")
+    if valor_l:
+        entrada_l.insert(0, valor_l.split('\n')[0])  # Asignar solo la primera línea a L
+
+    # Campo para Q
+    Label(frame_entrada, text="Q:", font=("Helvetica", 14), fg="#F4C8FF", bg="#2E2A47").pack(side="left")
+    entrada_q = Entry(frame_entrada, width=10, font=("Helvetica", 14), bd=2, relief="solid")
+    entrada_q.pack(side="left", padx=5)
+
+    # Cargar valor de Q desde el archivo
+    if valor_l:
+        valor_q = valor_l.split('\n')[1] if len(valor_l.split('\n')) > 1 else ""  # Asignar la segunda línea a Q
+        entrada_q.insert(0, valor_q)
+
+    def guardar_y_cerrar():
+        valor_l = entrada_l.get()
+        valor_q = entrada_q.get()
+        
+        # Validar que L y Q sean números válidos
+        if valor_l.isdigit() and valor_q.isdigit():
+            # Guardar L y Q en el archivo de configuración
+            with open("configuracionDePruebas/configT9.txt", "w") as file:
+                file.write(f"{valor_l}\n{valor_q}")  # Guardar L en la primera línea y Q en la segunda línea
+            modal.destroy()
+            messagebox.showinfo("Configuración Guardada", "Valores de L y Q guardados.")
+        else:
+            messagebox.showerror("Error", "Por favor, ingrese valores válidos para L y Q.")
+
+    # Botón para guardar la configuración
+    Button(modal, text="Guardar", font=("Helvetica", 12), bg="#3B2C6A", fg="white", command=guardar_y_cerrar).pack(pady=10)

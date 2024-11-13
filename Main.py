@@ -55,9 +55,13 @@ for label_text, test_id in pruebas:
         button_command = lambda test_id=test_id: abrir_modal_config_prueba_2(root)
     elif test_id == 8:
         button_command = lambda test_id=test_id: abrir_modal_config_prueba_8(root, entrada_binario)
+    elif test_id == 9:  # Aquí se agrega la comprobación para la prueba 9
+        button_command = lambda test_id=test_id: abrir_modal_config_prueba_9(root)
     else:
         button_command = None
+
     Button(frame_canvas_pruebas, image=config_image, bg="#2E2A47", bd=0, command=button_command).grid(row=row, column=0, sticky="w", padx=(0, 5), pady=5)
+    
     Checkbutton(frame_canvas_pruebas, text=label_text, variable=check_vars[test_id], font=("Helvetica", 12), bg="#2E2A47", fg="#F4C8FF", selectcolor="#3B2C6A", bd=1, relief="solid").grid(row=row, column=0, sticky="w", padx=(30, 5), pady=5)
 
     if test_id in [14, 15]:
@@ -70,6 +74,7 @@ for label_text, test_id in pruebas:
     Label(frame_canvas_pruebas, textvariable=aleatorio_texto[test_id], **result_style, width=20, anchor="w").grid(row=row, column=2, pady=5)
 
     row += 1
+
 
 frame_controls = Frame(main_frame, bg="#2E2A47", bd=1, relief="solid", width=300)
 frame_controls.pack(side="right", padx=10, pady=20, fill="y")
