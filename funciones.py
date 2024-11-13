@@ -5,6 +5,7 @@ from T2FrecuencyWithinABlock import block_frequency
 import mpmath as mp
 from T8OverlappingTemplateMatching import obtener_expansion_binaria_e, overlappingTemplateMachine
 from T9MaurersUniversalStatistical import universal_test
+from T12ApproximateEntropy import approximate_entropy_test
 
 def guardar_valor(valor, archivo):
     with open(archivo, "w") as file:
@@ -150,6 +151,8 @@ def ejecutar_pruebas_seleccionadas(check_vars, entrada_binario, resultados, alea
         ejecutar_prueba_8(secuencia_binaria, resultados, aleatorio_texto)
     if check_vars[9].get():  # Verifica si la prueba 9 está seleccionada
         ejecutar_prueba_9(secuencia_binaria, resultados, aleatorio_texto)  # Llamada a la función de la prueba 9
+    if check_vars[12].get():  # Verifica si la prueba 9 está seleccionada
+        ejecutar_prueba_12(secuencia_binaria, resultados, aleatorio_texto)  # Llamada a la función de la prueba 9
 
 def generar_secuencia_aleatoria(entrada_cantidad_bits, entrada_binario, max_line_length=60):
     cantidad_bits = entrada_cantidad_bits.get()
@@ -221,24 +224,28 @@ def abrir_modal_config_prueba_12(root):
 
     frame_entrada = Frame(modal, bg="#2E2A47")
     frame_entrada.pack(pady=10)
-    
-    # Etiqueta y campo de entrada para el valor de entropía
     Label(frame_entrada, text="M:", font=("Helvetica", 14), fg="#F4C8FF", bg="#2E2A47").pack(side="left")
     entrada_entropia = Entry(frame_entrada, width=10, font=("Helvetica", 14), bd=2, relief="solid")
     entrada_entropia.pack(side="left", padx=5)
     entrada_entropia.insert(0, cargar_valor("configuracionDePruebas/configT12.txt"))
-
-    # Función para guardar el valor de entropía y cerrar el modal
     def guardar_y_cerrar():
         valor_entropia = entrada_entropia.get()
         try:
-            # Convertir a float para verificar que sea un valor numérico válido
             valor_m = int(valor_entropia)
             guardar_valor(str(valor_m), "configuracionDePruebas/configT12.txt")
             modal.destroy()
             messagebox.showinfo("Configuración Guardada", "Valor de entropía guardado.")
         except ValueError:
             messagebox.showerror("Error", "Por favor, ingrese un valor numérico válido para la entropía.")
-
-    # Botón para guardar la configuración
     Button(modal, text="Guardar", font=("Helvetica", 12), bg="#3B2C6A", fg="white", command=guardar_y_cerrar).pack(pady=10)
+
+def ejecutar_prueba_12(secuencia_binaria, resultados, aleatorio_texto):
+    valor_m = cargar_valor("configuracionDePruebas/configT12.txt")
+    secuencia_binaria_sin_saltos = secuencia_binaria.replace("\n", "").replace(" ", "")
+    if secuencia_binaria_sin_saltos and valor_m.isdigit():
+        M = int(valor_m)
+        p_val, is_random = approximate_entropy_test(secuencia_binaria_sin_saltos, M)
+        resultados[12].set(f"P-valor: {p_val:.17f}")
+        aleatorio_texto[12].set("Aleatorio" if is_random else "No Aleatorio")
+    else:
+        messagebox.showerror("Error", "La secuencia binaria o el valor de M no son válidos.")
