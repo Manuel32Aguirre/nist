@@ -55,7 +55,7 @@ for label_text, test_id in pruebas:
     if test_id == 2:
         button_command = lambda test_id=test_id: abrir_modal_config_prueba_2(root)  # Para la prueba 2
     elif test_id == 8:
-        button_command = lambda test_id=test_id: abrir_modal_config_prueba_8(root)  # Para la prueba 8
+        button_command = lambda test_id=test_id: abrir_modal_config_prueba_8(root, entrada_binario)  # Para la prueba 8
     else:
         button_command = None  # Para el resto de las pruebas
 
@@ -87,15 +87,20 @@ frame_controls.pack(side="right", padx=10, pady=20, fill="y")
 frame_controls.columnconfigure(0, weight=1)
 frame_controls.columnconfigure(1, weight=1)
 
+# Cambiar el Entry por un Text para manejar grandes cantidades de texto
 Label(frame_controls, text="Introduce una secuencia binaria:", font=("Helvetica", 14), fg="#F4C8FF", bg="#2E2A47").pack(pady=10)
-entrada_binario = Entry(frame_controls, width=30, font=("Helvetica", 14), bd=2, relief="solid")
+
+# Usamos un Text en lugar de un Entry para manejar más texto
+entrada_binario = Text(frame_controls, height=6, width=30, font=("Helvetica", 14), bd=2, relief="solid")
 entrada_binario.pack(pady=10)
+
 
 Label(frame_controls, text="Cantidad de bits aleatorios:", font=("Helvetica", 14), fg="#F4C8FF", bg="#2E2A47").pack(pady=10)
 entrada_cantidad_bits = Entry(frame_controls, width=10, font=("Helvetica", 14), bd=2, relief="solid")
 entrada_cantidad_bits.pack(pady=10)
 
 Button(frame_controls, text="Ejecutar Pruebas Seleccionadas", font=("Helvetica", 14), bg="#3B2C6A", fg="white", width=25, command=lambda: ejecutar_pruebas_seleccionadas(check_vars, entrada_binario, resultados, aleatorio_texto)).pack(pady=10)
+
 Button(frame_controls, text="Generar Secuencia Aleatoria", font=("Helvetica", 14), bg="#3B2C6A", fg="white", width=25, command=lambda: generar_secuencia_aleatoria(entrada_cantidad_bits, entrada_binario)).pack(pady=10)
 
 root.mainloop()

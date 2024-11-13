@@ -60,7 +60,3 @@ def obtener_expansion_binaria_e(bits):
     e = mp.e  # Obtener el valor de e con la precisión definida
     binario_e = bin(int(e * (2 ** bits)))[2:].zfill(bits)  # Convertir a binario
     return binario_e
-
-# Generar la expansión binaria de e con 1,000,000 de bits
-binary_e = obtener_expansion_binaria_e(1000000)
-print(overlappingTemplateMachine(binary_e))
