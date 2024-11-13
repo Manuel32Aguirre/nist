@@ -1,14 +1,13 @@
 from math import floor
-from numpy import array
-from numpy import exp
-from numpy import zeros
-from scipy.special import gammaincc
-from scipy.special import hyp1f1
+from numpy import array, exp, zeros
+from scipy.special import gammaincc, hyp1f1
 from mpmath import mp
 
-def overlappingTemplateMachine(binary_data: str, verbose=False, pattern_size=9, block_size=1032):
+def overlappingTemplateMachine(binary_data: str, pattern: str):
+    block_size = 1032
+    verbose = False
     length_of_binary_data = len(binary_data)
-    pattern = '1' * pattern_size
+    pattern_size = len(pattern)  # Usar el tamaño del patrón pasado
 
     number_of_block = floor(length_of_binary_data / block_size)
 
@@ -44,8 +43,7 @@ def overlappingTemplateMachine(binary_data: str, verbose=False, pattern_size=9, 
         xObs += pow(pattern_counts[i] - number_of_block * pi[i], 2.0) / (number_of_block * pi[i])
 
     p_value = gammaincc(5.0 / 2.0, xObs / 2.0)
-
-
+    print("Se esta retornando un p value de ", p_value)
     return (p_value, (p_value >= 0.01))
 
 def get_prob(u, x):
@@ -55,8 +53,7 @@ def get_prob(u, x):
     return out
 
 def obtener_expansion_binaria_e(bits):
-    # Establecer precisión a bits + 2 para asegurar exactitud
     mp.dps = bits + 2
-    e = mp.e  # Obtener el valor de e con la precisión definida
-    binario_e = bin(int(e * (2 ** bits)))[2:].zfill(bits)  # Convertir a binario
+    e = mp.e
+    binario_e = bin(int(e * (2 ** bits)))[2:].zfill(bits)
     return binario_e

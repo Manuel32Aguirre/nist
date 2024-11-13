@@ -57,7 +57,6 @@ for label_text, test_id in pruebas:
         button_command = lambda test_id=test_id: abrir_modal_config_prueba_8(root, entrada_binario)
     else:
         button_command = None
-
     Button(frame_canvas_pruebas, image=config_image, bg="#2E2A47", bd=0, command=button_command).grid(row=row, column=0, sticky="w", padx=(0, 5), pady=5)
     Checkbutton(frame_canvas_pruebas, text=label_text, variable=check_vars[test_id], font=("Helvetica", 12), bg="#2E2A47", fg="#F4C8FF", selectcolor="#3B2C6A", bd=1, relief="solid").grid(row=row, column=0, sticky="w", padx=(30, 5), pady=5)
 
@@ -81,12 +80,10 @@ frame_controls.columnconfigure(1, weight=1)
 Label(frame_controls, text="Introduce una secuencia binaria:", font=("Helvetica", 14), fg="#F4C8FF", bg="#2E2A47").pack(pady=10)
 entrada_binario = Text(frame_controls, height=6, width=30, font=("Helvetica", 14), bd=2, relief="solid")
 entrada_binario.pack(pady=10)
-
 Label(frame_controls, text="Cantidad de bits aleatorios:", font=("Helvetica", 14), fg="#F4C8FF", bg="#2E2A47").pack(pady=10)
 entrada_cantidad_bits = Entry(frame_controls, width=10, font=("Helvetica", 14), bd=2, relief="solid")
 entrada_cantidad_bits.pack(pady=10)
-
 Button(frame_controls, text="Ejecutar Pruebas Seleccionadas", font=("Helvetica", 14), bg="#3B2C6A", fg="white", width=25, command=lambda: ejecutar_pruebas_seleccionadas(check_vars, entrada_binario, resultados, aleatorio_texto)).pack(pady=10)
 Button(frame_controls, text="Generar Secuencia Aleatoria", font=("Helvetica", 14), bg="#3B2C6A", fg="white", width=25, command=lambda: generar_secuencia_aleatoria(entrada_cantidad_bits, entrada_binario)).pack(pady=10)
-
+entrada_binario.bind("<Control-v>", lambda event: on_paste(entrada_binario, event))
 root.mainloop()

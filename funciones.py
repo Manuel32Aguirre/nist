@@ -3,7 +3,7 @@ import os
 import random
 from T2FrecuencyWithinABlock import block_frequency
 import mpmath as mp
-from T8OverlappingTemplateMatching import obtener_expansion_binaria_e
+from T8OverlappingTemplateMatching import obtener_expansion_binaria_e, overlappingTemplateMachine
 
 def guardar_valor(valor, archivo):
     with open(archivo, "w") as file:
@@ -41,9 +41,9 @@ def abrir_modal_config_prueba_2(root):
 
 def insertar_texto_con_saltos(text_widget, texto, max_line_length=60):
     lines = [texto[i:i + max_line_length] for i in range(0, len(texto), max_line_length)]
-    for line in lines:
-        text_widget.insert("end", line + "\n")
-        text_widget.yview_moveto(1)
+    text_widget.delete('1.0', 'end')
+    text_widget.insert('1.0', '\n'.join(lines) + '\n')
+    text_widget.yview_moveto(1)
 
 def abrir_modal_config_prueba_8(root, entrada_binario):
     modal = Toplevel(root)
@@ -97,21 +97,43 @@ def abrir_modal_config_prueba_8(root, entrada_binario):
 
 def ejecutar_prueba_2(secuencia_binaria, resultados, aleatorio_texto):
     valor_m = cargar_valor("configuracionDePruebas/configT2.txt")
-    if secuencia_binaria and valor_m.isdigit():
-        p_val, is_random = block_frequency(secuencia_binaria, int(valor_m))
+    secuencia_binaria_sin_saltos = secuencia_binaria.replace("\n", "")
+    
+    if secuencia_binaria_sin_saltos and valor_m.isdigit():
+        p_val, is_random = block_frequency(secuencia_binaria_sin_saltos, int(valor_m))
         resultados[2].set(f"P-valor: {p_val:.17f}")
         aleatorio_texto[2].set("Aleatorio" if is_random else "No Aleatorio")
 
-def ejecutar_pruebas_seleccionadas(check_vars, entrada_binario, resultados, aleatorio_texto):
-    if check_vars[2].get():
-        secuencia_binaria = entrada_binario.get("1.0", "end-1c")
-        ejecutar_prueba_2(secuencia_binaria, resultados, aleatorio_texto)
+def ejecutar_prueba_8(secuencia_binaria, resultados, aleatorio_texto):
+    secuencia_binaria_sin_saltos = secuencia_binaria.replace("\n", "")
+    pattern = cargar_valor("configuracionDePruebas/configT8_Patron.txt")
+    
+    if secuencia_binaria_sin_saltos and pattern:
+        p_val, is_random = overlappingTemplateMachine(secuencia_binaria_sin_saltos, pattern)
+        resultados[8].set(f"P-valor: {p_val:.17f}")
+        aleatorio_texto[8].set("Aleatorio" if is_random else "No Aleatorio")
+    else:
+        messagebox.showerror("Error", "La secuencia o el patrón no son válidos.")
 
-def generar_secuencia_aleatoria(entrada_cantidad_bits, entrada_binario):
+def ejecutar_pruebas_seleccionadas(check_vars, entrada_binario, resultados, aleatorio_texto):
+    secuencia_binaria = entrada_binario.get("1.0", "end-1c")
+    if check_vars[2].get():
+        ejecutar_prueba_2(secuencia_binaria, resultados, aleatorio_texto)
+    if check_vars[8].get():
+        ejecutar_prueba_8(secuencia_binaria, resultados, aleatorio_texto)
+
+def generar_secuencia_aleatoria(entrada_cantidad_bits, entrada_binario, max_line_length=60):
     cantidad_bits = entrada_cantidad_bits.get()
     if cantidad_bits.isdigit():
         secuencia_aleatoria = ''.join(str(random.randint(0, 1)) for _ in range(int(cantidad_bits)))
-        entrada_binario.delete("1.0", "end")
-        entrada_binario.insert("1.0", secuencia_aleatoria)
+        entrada_binario.delete('1.0', 'end')
+        insertar_texto_con_saltos(entrada_binario, secuencia_aleatoria, max_line_length)
     else:
         messagebox.showerror("Error", "Por favor, introduce un número válido de bits.")
+
+def on_paste(entry_widget, event):
+    texto = entry_widget.clipboard_get()
+    texto_limpio = texto.replace("\n", "").replace(" ", "")
+    entry_widget.delete("1.0", "end")
+    entry_widget.insert("1.0", texto_limpio)
+    return "break"

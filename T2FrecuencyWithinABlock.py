@@ -1,7 +1,7 @@
 import math
 import scipy.special as spc
 
-def block_frequency(bin_data: str, block_size=128):
+def block_frequency(bin_data, block_size):
     num_blocks = math.floor(len(bin_data) / block_size)
     block_start, block_end = 0, block_size
     # Keep track of the proportion of ones per block
