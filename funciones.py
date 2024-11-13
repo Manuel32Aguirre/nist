@@ -5,6 +5,7 @@ from T2FrecuencyWithinABlock import block_frequency
 import mpmath as mp
 from T8OverlappingTemplateMatching import obtener_expansion_binaria_e, overlappingTemplateMachine
 from T9MaurersUniversalStatistical import universal_test
+from T3RunsTest import runs_test
 
 def guardar_valor(valor, archivo):
     with open(archivo, "w") as file:
@@ -104,6 +105,12 @@ def ejecutar_prueba_2(secuencia_binaria, resultados, aleatorio_texto):
         p_val, is_random = block_frequency(secuencia_binaria_sin_saltos, int(valor_m))
         resultados[2].set(f"P-valor: {p_val:.17f}")
         aleatorio_texto[2].set("Aleatorio" if is_random else "No Aleatorio")
+        
+def ejecutar_prueba_3(secuencia_binaria, resultados, aleatorio_texto):
+    p_val, is_random = runs_test(secuencia_binaria)
+    print(f"el p val es {p_val}")
+    resultados[3].set(f"P-valor: {p_val:.17f}")
+    aleatorio_texto[3].set("Aleatorio" if is_random else "No Aleatorio")
 
 def ejecutar_prueba_8(secuencia_binaria, resultados, aleatorio_texto):
     secuencia_binaria_sin_saltos = secuencia_binaria.replace("\n", "")
@@ -146,6 +153,8 @@ def ejecutar_pruebas_seleccionadas(check_vars, entrada_binario, resultados, alea
     secuencia_binaria = entrada_binario.get("1.0", "end-1c")
     if check_vars[2].get():
         ejecutar_prueba_2(secuencia_binaria, resultados, aleatorio_texto)
+    if check_vars[3].get():
+        ejecutar_prueba_3(secuencia_binaria, resultados, aleatorio_texto)
     if check_vars[8].get():
         ejecutar_prueba_8(secuencia_binaria, resultados, aleatorio_texto)
     if check_vars[9].get():  # Verifica si la prueba 9 está seleccionada
