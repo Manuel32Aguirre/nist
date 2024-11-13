@@ -57,6 +57,8 @@ for label_text, test_id in pruebas:
         button_command = lambda test_id=test_id: abrir_modal_config_prueba_8(root, entrada_binario)
     elif test_id == 9:  # Aquí se agrega la comprobación para la prueba 9
         button_command = lambda test_id=test_id: abrir_modal_config_prueba_9(root)
+    elif test_id == 12:
+        button_command = lambda test_id=test_id: abrir_modal_config_prueba_12(root)
     else:
         button_command = None
 
