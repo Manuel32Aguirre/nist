@@ -7,7 +7,6 @@ import mpmath as mp
 from T8OverlappingTemplateMatching import obtener_expansion_binaria_e, overlappingTemplateMachine
 from T9MaurersUniversalStatistical import universal_test
 from T12ApproximateEntropy import approximate_entropy_test
-from T3RunsTest import runs_test
 from T13CumulativeSum import cumulative_sums
 
 def guardar_valor(valor, archivo):
@@ -110,10 +109,13 @@ def ejecutar_prueba_2(secuencia_binaria, resultados, aleatorio_texto):
         aleatorio_texto[2].set("Aleatorio" if is_random else "No Aleatorio")
         
 def ejecutar_prueba_3(secuencia_binaria, resultados, aleatorio_texto):
-    p_val, is_random = runs_test(secuencia_binaria)
-    print(f"el p val es {p_val}")
-    resultados[3].set(f"P-valor: {p_val:.17f}")
-    aleatorio_texto[3].set("Aleatorio" if is_random else "No Aleatorio")
+    valor_m = cargar_valor("configuracionDePruebas/configT2.txt")
+    secuencia_binaria_sin_saltos = secuencia_binaria.replace("\n", "")
+    secuencia_binaria_sin_saltos = [int(bit) for bit in secuencia_binaria_sin_saltos]
+    if secuencia_binaria_sin_saltos and valor_m.isdigit():
+        p_val, is_random = runs_test(secuencia_binaria_sin_saltos)
+        resultados[3].set(f"P-valor: {p_val:.17f}")
+        aleatorio_texto[3].set("Aleatorio" if is_random else "No Aleatorio")
 
 def ejecutar_prueba_8(secuencia_binaria, resultados, aleatorio_texto):
     secuencia_binaria_sin_saltos = secuencia_binaria.replace("\n", "")
