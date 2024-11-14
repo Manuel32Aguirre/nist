@@ -1,5 +1,6 @@
 import math
 from scipy.special import gammaincc
+import random
 
 def nist_longest_run_test(binary_sequence, block_size):
     n = len(binary_sequence)
@@ -66,11 +67,13 @@ def nist_longest_run_test(binary_sequence, block_size):
 
 if __name__ == '__main__':
     # Example usage
-    binary_string = "11001100000101010110110001001100111000000000001001" \
-                    "00110101010001000100111101011010000000110101111100" \
-                    "1100111001101101100010110010"
+    # binary_string = "11001100000101010110110001001100111000000000001001" \
+    #                 "00110101010001000100111101011010000000110101111100" \
+    #                 "1100111001101101100010110010"
     
-    binary_sequence = list(binary_string)
+    # binary_sequence = list(binary_string)
+
+    binary_sequence = [str(random.randint(0, 1)) for _ in range(100)]
 
     print(f"Binary sequence: {binary_sequence.__len__()} bits")
 

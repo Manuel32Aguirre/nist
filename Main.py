@@ -53,12 +53,18 @@ row = 1
 for label_text, test_id in pruebas:
     if test_id == 2:
         button_command = lambda test_id=test_id: abrir_modal_config_prueba_2(root)
+    elif test_id == 4:
+        button_command = lambda test_id=test_id: abrir_modal_config_prueba_4(root)
+    elif test_id == 5:
+        button_command = lambda test_id=test_id: abrir_modal_config_prueba_5(root)
     elif test_id == 7:
         button_command = lambda test_id=test_id: abrir_modal_config_prueba_7(root, entrada_binario)
     elif test_id == 8:
         button_command = lambda test_id=test_id: abrir_modal_config_prueba_8(root, entrada_binario)
     elif test_id == 9:  # Aquí se agrega la comprobación para la prueba 9
         button_command = lambda test_id=test_id: abrir_modal_config_prueba_9(root)
+    elif test_id == 10:
+        button_command = lambda test_id=test_id: abrir_modal_config_prueba_10(root)
     elif test_id == 11:
         button_command = lambda test_id=test_id: abrir_modal_config_prueba_11(root)
     elif test_id == 12:

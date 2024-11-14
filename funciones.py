@@ -2,9 +2,16 @@ from tkinter import Toplevel, Label, Entry, Button, messagebox, Frame
 import tkinter as tk  
 import os
 import random
+
+from T10_Linear_Complexity_test import linear_complexity_test
+from T1_Frequency_Test import prueba_monobit
 from T2FrecuencyWithinABlock import block_frequency
 from T3RunsTest import runs_test
 import mpmath as mp
+
+from T4_longest_run import nist_longest_run_test
+from T5_binary_matrix import binary_matrix_rank_test
+from T6_Discrete_Fourier_transform import nist_dft_test
 from T7_non_overlapping_template_matching_test import obtener_expansion_binaria_e7, non_overlapping_template_matching_test
 from T8OverlappingTemplateMatching import obtener_expansion_binaria_e, overlappingTemplateMachine
 from T9MaurersUniversalStatistical import universal_test
@@ -53,6 +60,54 @@ def insertar_texto_con_saltos(text_widget, texto, max_line_length=60):
     text_widget.delete('1.0', 'end')
     text_widget.insert('1.0', '\n'.join(lines) + '\n')
     text_widget.yview_moveto(1)
+
+def abrir_modal_config_prueba_4(root):
+    modal = Toplevel(root)
+    modal.title("Configuración de Prueba 1")
+    modal.geometry("300x250")
+    modal.configure(bg="#2E2A47")
+
+    frame_entrada = Frame(modal, bg="#2E2A47")
+    frame_entrada.pack(pady=10)
+    Label(frame_entrada, text="M:", font=("Helvetica", 14), fg="#F4C8FF", bg="#2E2A47").pack(side="left")
+    entrada_m = Entry(frame_entrada, width=10, font=("Helvetica", 14), bd=2, relief="solid")
+    entrada_m.pack(side="left", padx=5)
+    entrada_m.insert(0, cargar_valor("configuracionDePruebas/configT4.txt"))
+
+    def guardar_y_cerrar():
+        valor = entrada_m.get()
+        if valor.isdigit() and (int(valor) == 8 or int(valor) == 128 or int(valor) == 512):
+            guardar_valor(valor, "configuracionDePruebas/configT4.txt")
+            modal.destroy()
+            messagebox.showinfo("Configuración Guardada", "Valor de M guardado.")
+        else:
+            messagebox.showerror("Error", "Por favor, ingrese un valor válido para M.")
+
+    Button(modal, text="Guardar", font=("Helvetica", 12), bg="#3B2C6A", fg="white", command=guardar_y_cerrar).pack(pady=10)
+
+def abrir_modal_config_prueba_5(root):
+    modal = Toplevel(root)
+    modal.title("Configuración de Prueba 1")
+    modal.geometry("300x250")
+    modal.configure(bg="#2E2A47")
+
+    frame_entrada = Frame(modal, bg="#2E2A47")
+    frame_entrada.pack(pady=10)
+    Label(frame_entrada, text="M:", font=("Helvetica", 14), fg="#F4C8FF", bg="#2E2A47").pack(side="left")
+    entrada_m = Entry(frame_entrada, width=10, font=("Helvetica", 14), bd=2, relief="solid")
+    entrada_m.pack(side="left", padx=5)
+    entrada_m.insert(0, cargar_valor("configuracionDePruebas/configT5.txt"))
+
+    def guardar_y_cerrar():
+        valor = entrada_m.get()
+        if valor.isdigit():
+            guardar_valor(valor, "configuracionDePruebas/configT5.txt")
+            modal.destroy()
+            messagebox.showinfo("Configuración Guardada", "Valor de M guardado.")
+        else:
+            messagebox.showerror("Error", "Por favor, ingrese un valor válido para M.")
+
+    Button(modal, text="Guardar", font=("Helvetica", 12), bg="#3B2C6A", fg="white", command=guardar_y_cerrar).pack(pady=10)
 
 def abrir_modal_config_prueba_7(root, entrada_binario):
     modal = Toplevel(root)
@@ -154,6 +209,13 @@ def abrir_modal_config_prueba_8(root, entrada_binario):
 
     Button(modal, text="Generar Expansión Binaria", font=("Helvetica", 12), bg="#3B2C6A", fg="white", command=generar_expansion_binaria_modal).pack(pady=10)
 
+def ejecutar_prueba_1(secuencia_binaria, resultados, aleatorio_texto):
+    secuencia_binaria_sin_saltos = secuencia_binaria.replace("\n", "")
+    if secuencia_binaria_sin_saltos:
+        p_val, is_random = prueba_monobit(secuencia_binaria_sin_saltos)
+        resultados[1].set(f"P-valor: {p_val:.17f}")
+        aleatorio_texto[1].set("Aleatorio" if is_random else "No Aleatorio")
+
 def ejecutar_prueba_2(secuencia_binaria, resultados, aleatorio_texto):
     valor_m = cargar_valor("configuracionDePruebas/configT2.txt")
     secuencia_binaria_sin_saltos = secuencia_binaria.replace("\n", "")
@@ -171,6 +233,32 @@ def ejecutar_prueba_3(secuencia_binaria, resultados, aleatorio_texto):
         p_val, is_random = runs_test(secuencia_binaria_sin_saltos)
         resultados[3].set(f"P-valor: {p_val:.17f}")
         aleatorio_texto[3].set("Aleatorio" if is_random else "No Aleatorio")
+
+def ejecutar_prueba_4(secuencia_binaria, resultados, aleatorio_texto):
+    secuencia_binaria_sin_saltos = secuencia_binaria.replace("\n", "")
+    secuencia_binaria_sin_saltos = [int(bit) for bit in secuencia_binaria_sin_saltos]
+    valor_m = int(cargar_valor("configuracionDePruebas/configT4.txt"))
+    if secuencia_binaria_sin_saltos:
+        p_val, is_random = nist_longest_run_test(secuencia_binaria_sin_saltos, valor_m)
+        resultados[4].set(f"P-valor: {p_val:.17f}")
+        aleatorio_texto[4].set("Aleatorio" if is_random else "No Aleatorio")
+
+def ejecutar_prueba_5(secuencia_binaria, resultados, aleatorio_texto):
+    secuencia_binaria_sin_saltos = secuencia_binaria.replace("\n", "")
+    secuencia_binaria_sin_saltos = [int(bit) for bit in secuencia_binaria_sin_saltos]
+    valor_m = int(cargar_valor("configuracionDePruebas/configT5.txt"))
+    if secuencia_binaria_sin_saltos:
+        p_val, is_random = binary_matrix_rank_test(secuencia_binaria_sin_saltos, valor_m, valor_m)
+        resultados[5].set(f"P-valor: {p_val:.17f}")
+        aleatorio_texto[5].set("Aleatorio" if is_random else "No Aleatorio")
+
+def ejecutar_prueba_6(secuencia_binaria, resultados, aleatorio_texto):
+    secuencia_binaria_sin_saltos = secuencia_binaria.replace("\n", "")
+    secuencia_binaria_sin_saltos = [int(bit) for bit in secuencia_binaria_sin_saltos]
+    if secuencia_binaria_sin_saltos:
+        p_val, is_random = nist_dft_test(secuencia_binaria_sin_saltos)
+        resultados[6].set(f"P-valor: {p_val:.17f}")
+        aleatorio_texto[6].set("Aleatorio" if is_random else "No Aleatorio")
 
 def ejecutar_prueba_7(secuencia_binaria, resultados, aleatorio_texto):
     secuencia_binaria_sin_saltos = secuencia_binaria.replace("\n", "")
@@ -219,6 +307,14 @@ def ejecutar_prueba_9(secuencia_binaria, resultados, aleatorio_texto):
     else:
         messagebox.showerror("Error", "La secuencia binaria o los valores de L y Q no son válidos.")
 
+def ejecutar_prueba_10(secuencia_binaria, resultados, aleatorio_texto):
+    secuencia_binaria_sin_saltos = secuencia_binaria.replace("\n", "")
+    secuencia_binaria_sin_saltos = [int(bit) for bit in secuencia_binaria_sin_saltos]
+    valor_m = int(cargar_valor("configuracionDePruebas/configT10.txt"))
+    if secuencia_binaria_sin_saltos:
+        p_val, is_random = linear_complexity_test(secuencia_binaria_sin_saltos, valor_m)
+        resultados[10].set(f"P-valor: {p_val:.17f}")
+        aleatorio_texto[10].set("Aleatorio" if is_random else "No Aleatorio")
 
 
 def ejecutar_prueba_14(secuencia_binaria, resultados, aleatorio_texto):
@@ -264,16 +360,26 @@ def ejecutar_prueba_15(secuencia_binaria, resultados, aleatorio_texto):
 
 def ejecutar_pruebas_seleccionadas(check_vars, entrada_binario, resultados, aleatorio_texto):
     secuencia_binaria = entrada_binario.get("1.0", "end-1c")
+    if check_vars[1].get():
+        ejecutar_prueba_1(secuencia_binaria, resultados, aleatorio_texto)
     if check_vars[2].get():
         ejecutar_prueba_2(secuencia_binaria, resultados, aleatorio_texto)
     if check_vars[3].get():
         ejecutar_prueba_3(secuencia_binaria, resultados, aleatorio_texto)
+    if check_vars[4].get():
+        ejecutar_prueba_4(secuencia_binaria, resultados, aleatorio_texto)
+    if check_vars[5].get():
+        ejecutar_prueba_5(secuencia_binaria, resultados, aleatorio_texto)
+    if check_vars[6].get():
+        ejecutar_prueba_6(secuencia_binaria, resultados, aleatorio_texto)
     if check_vars[7].get():
         ejecutar_prueba_7(secuencia_binaria, resultados, aleatorio_texto)
     if check_vars[8].get():
         ejecutar_prueba_8(secuencia_binaria, resultados, aleatorio_texto)
     if check_vars[9].get():  # Verifica si la prueba 9 está seleccionada
         ejecutar_prueba_9(secuencia_binaria, resultados, aleatorio_texto)  # Llamada a la función de la prueba 9
+    if check_vars[10].get():  # Verifica si la prueba 10 está seleccionada
+        ejecutar_prueba_10(secuencia_binaria, resultados, aleatorio_texto)
     if check_vars[11].get():  # Verifica si la prueba 11 está seleccionada
         ejecutar_prueba_11(secuencia_binaria, resultados, aleatorio_texto)  # Llamada a la función de la prueba 11
     if check_vars[12].get():  # Verifica si la prueba 12 está seleccionada
@@ -345,6 +451,30 @@ def abrir_modal_config_prueba_9(root):
             messagebox.showerror("Error", "Por favor, ingrese valores válidos para L y Q.")
 
     # Botón para guardar la configuración
+    Button(modal, text="Guardar", font=("Helvetica", 12), bg="#3B2C6A", fg="white", command=guardar_y_cerrar).pack(pady=10)
+
+def abrir_modal_config_prueba_10(root):
+    modal = Toplevel(root)
+    modal.title("Configuración de Prueba 1")
+    modal.geometry("300x250")
+    modal.configure(bg="#2E2A47")
+
+    frame_entrada = Frame(modal, bg="#2E2A47")
+    frame_entrada.pack(pady=10)
+    Label(frame_entrada, text="M:", font=("Helvetica", 14), fg="#F4C8FF", bg="#2E2A47").pack(side="left")
+    entrada_m = Entry(frame_entrada, width=10, font=("Helvetica", 14), bd=2, relief="solid")
+    entrada_m.pack(side="left", padx=5)
+    entrada_m.insert(0, cargar_valor("configuracionDePruebas/configT10.txt"))
+
+    def guardar_y_cerrar():
+        valor = entrada_m.get()
+        if valor.isdigit():
+            guardar_valor(valor, "configuracionDePruebas/configT10.txt")
+            modal.destroy()
+            messagebox.showinfo("Configuración Guardada", "Valor de M guardado.")
+        else:
+            messagebox.showerror("Error", "Por favor, ingrese un valor válido para M.")
+
     Button(modal, text="Guardar", font=("Helvetica", 12), bg="#3B2C6A", fg="white", command=guardar_y_cerrar).pack(pady=10)
 
 def abrir_modal_config_prueba_11(root):

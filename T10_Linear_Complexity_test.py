@@ -1,5 +1,6 @@
-import numpy as np
+import random
 from scipy.special import gammaincc
+import numpy as np
 
 from decimal import Decimal, getcontext
 
@@ -25,63 +26,78 @@ def calculate_binary_digits_of_e(num_digits):
 
     return binary_digits
 
-def berlekamp_massey(sequence):
+def berlekamp_massey_algorithm(sequence):
+    # Implementación del algoritmo de Berlekamp-Massey para calcular la complejidad lineal de una secuencia
     n = len(sequence)
-    c = [0] * n
-    b = [0] * n
-    c[0], b[0] = 1, 1
-    l, m, i = 0, -1, 0
-    
+    L = 0
+    m = -1
+    C = [0] * n
+    B = [0] * n
+    C[0] = 1
+    B[0] = 1
     for i in range(n):
-        discrepancy = sequence[i]
-        for j in range(1, l + 1):
-            discrepancy ^= c[j] & sequence[i - j]
-        
+        discrepancy = (sequence[i] + sum(C[1:L+1][j] * sequence[i-L+j] for j in range(L))) % 2
         if discrepancy == 1:
-            temp = c[:]
-            for j in range(n - i + m):
-                c[i - m + j] ^= b[j]
-            if l <= i // 2:
-                l = i + 1 - l
+            T = C[:]
+            for j in range(i - m, n):
+                C[j] = (C[j] + B[j - (i - m)]) % 2
+            if L <= i / 2:
+                L = i + 1 - L
                 m = i
-                b = temp
-    return l
+                B = T
+    return L
 
-def nist_linear_complexity_test(sequence, M=500):
-    N = len(sequence) // M
-    if N == 0:
-        raise ValueError("La longitud de la secuencia debe ser al menos igual a M.")
+def linear_complexity_test(epsilon, M):
+    # Asegúrate de que la secuencia sea una lista de enteros
+    epsilon = [int(bit) for bit in epsilon]
     
-    # Dividir la secuencia en bloques de longitud M
-    blocks = [sequence[i * M:(i + 1) * M] for i in range(N)]
+    # Paso 1: Dividir la secuencia en bloques
+    n = len(epsilon)
+    N = n // M
+    blocks = [epsilon[i * M:(i + 1) * M] for i in range(N)]
+    
+    # Paso 2: Calcular la complejidad lineal para cada bloque
+    complexities = [berlekamp_massey_algorithm(block) for block in blocks]
+    
+    # Paso 3: Calcular el valor teórico esperado de la complejidad media
+    mu = M / 2 + (9 + (-1)**(M + 1)) / 36 - (M / (2**(M - 1)))
+    
+    # Paso 4: Calcular Ti para cada bloque
+    T = [(complexity - mu) for complexity in complexities]
+    
+    # Paso 5: Clasificar valores de Ti en categorías
+    v = [0] * 7
+    for t in T:
+        if t <= -2.5:
+            v[0] += 1
+        elif -2.5 < t <= -1.5:
+            v[1] += 1
+        elif -1.5 < t <= -0.5:
+            v[2] += 1
+        elif -0.5 < t <= 0.5:
+            v[3] += 1
+        elif 0.5 < t <= 1.5:
+            v[4] += 1
+        elif 1.5 < t <= 2.5:
+            v[5] += 1
+        else:
+            v[6] += 1
+    
+    # Paso 6: Calcular el estadístico de prueba chi-cuadrado
+    pi = [0.010417, 0.03125, 0.125, 0.5, 0.25, 0.0625, 0.020833]
+    chi_squared = sum([(v[i] - N * pi[i])**2 / (N * pi[i]) for i in range(7)])
+    
+    # Paso 7: Calcular el valor p usando la función gamma incompleta regularizada
+    p_value = gammaincc(3, chi_squared / 2)
+    
+    return p_value, p_value >= 0.01
 
-    # Calcular la complejidad lineal de cada bloque
-    complexities = [berlekamp_massey(block) for block in blocks]
-    
-    # Calcular el valor esperado y la desviación estándar
-    mean = M / 2.0 + (9 + (-1) ** (M + 1)) / 36.0 - (M / 3.0 + 2 / 9.0) / 2 ** M
-    variance = M * (1 / 2.0 + (9 + (-1) ** (M + 1)) / 36.0 - (M / 3.0 + 2 / 9.0) / 2 ** M) / 2
-    
-    # Calcular la estadística de prueba T para cada bloque
-    T = np.array([(complexity - mean) / np.sqrt(variance) for complexity in complexities])
-    
-    # Calcular el valor Chi-cuadrado
-    v = [np.sum((T >= -2.5 + 0.5 * i) & (T < -2.5 + 0.5 * (i + 1))) for i in range(6)]
-    pi = [0.10, 0.25, 0.30, 0.20, 0.10, 0.05]  # probabilidades teóricas
-    chi_squared = np.sum([(v[i] - N * pi[i]) ** 2 / (N * pi[i]) for i in range(6)])
-    
-    # Calcular el valor p
-    p_value = gammaincc(5 / 2.0, chi_squared / 2.0)
-
-    # Decisión de rechazo
-    is_random = p_value >= 0.01
-
-    return p_value, is_random
 
 if __name__ == '__main__':
     # Ejemplo para los primeros 1,000,000 dígitos binarios
-    binary_digits_of_e = calculate_binary_digits_of_e(1000000)
+    # binary_digits_of_e = calculate_binary_digits_of_e(1000000)
+    binary_digits_of_e = [str(random.randint(0, 1)) for _ in range(100)]
     
-    p_value, is_random = nist_linear_complexity_test(list(map(int, binary_digits_of_e)))
+    p_value, is_random = linear_complexity_test(binary_digits_of_e, 2)
     
     print(f"P-value: {p_value}")
