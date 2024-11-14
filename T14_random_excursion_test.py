@@ -122,10 +122,3 @@ def random_excursion_test(bits):
         print("FAIL: Data not random")
     return (plist,success)
 
-if __name__ == "__main__":
-    bits = [0,1,1,0,1,1,0,1,0,1]
-    success, _, plist = random_excursion_test(bits)
-    
-    print("success =",success)
-    print("plist = ",plist)
-

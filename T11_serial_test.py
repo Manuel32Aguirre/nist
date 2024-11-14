@@ -57,7 +57,7 @@ def psi_sq_mv1(m, n, padded_bits):
     psi_sq_m -= n
     return psi_sq_m            
          
-def serial_test(bits,patternlen):
+def serial_test(bits,patternlen=None):
     n = len(bits)
     if patternlen != None:
         m = patternlen  
@@ -92,12 +92,5 @@ def serial_test(bits,patternlen):
     print("  P2         = ",P2)
      
     success = (P1 >= 0.01) and (P2 >= 0.01)
-    return ([P1,P2],success)
+    return P1,P2,success
 
-if __name__ == "__main__":
-    bits = [0,0,1,1,0,1,1,1,0,1]
-    success, _, plist = serial_test(bits, patternlen=3)
-    
-    print("success =",success)
-    print("plist = ",plist)
-    

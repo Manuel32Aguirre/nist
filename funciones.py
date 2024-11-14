@@ -1,4 +1,5 @@
 from tkinter import Toplevel, Label, Entry, Button, messagebox, Frame
+import tkinter as tk  
 import os
 import random
 from T2FrecuencyWithinABlock import block_frequency
@@ -7,8 +8,11 @@ import mpmath as mp
 from T7_non_overlapping_template_matching_test import obtener_expansion_binaria_e7, non_overlapping_template_matching_test
 from T8OverlappingTemplateMatching import obtener_expansion_binaria_e, overlappingTemplateMachine
 from T9MaurersUniversalStatistical import universal_test
+from T11_serial_test import serial_test
 from T12ApproximateEntropy import approximate_entropy_test
 from T13CumulativeSum import cumulative_sums
+from T14_random_excursion_test import random_excursion_test
+from T15_random_excursion_variant_test import random_excursion_variant_test
 
 def guardar_valor(valor, archivo):
     with open(archivo, "w") as file:
@@ -216,6 +220,48 @@ def ejecutar_prueba_9(secuencia_binaria, resultados, aleatorio_texto):
         messagebox.showerror("Error", "La secuencia binaria o los valores de L y Q no son válidos.")
 
 
+
+def ejecutar_prueba_14(secuencia_binaria, resultados, aleatorio_texto):
+    # Eliminar saltos de línea y convertir a lista de enteros
+    secuencia_binaria_sin_saltos = secuencia_binaria.replace("\n", "")
+    secuencia_binaria_sin_saltos = [int(bit) for bit in secuencia_binaria_sin_saltos]
+    
+    if secuencia_binaria_sin_saltos:
+        # Ejecutar la prueba de excursión aleatoria
+        p_list, is_random = random_excursion_test(secuencia_binaria_sin_saltos)
+        
+        # Formatear los p-valores
+        p_list_str = "\n".join([f"P-valor {i+1}: {p:.17f}" for i, p in enumerate(p_list)])
+        
+        # Mostrar los resultados formateados en el widget de tipo Text
+        resultados[14].delete(1.0, tk.END)  # Limpiar el contenido previo del widget Text
+        resultados[14].insert(tk.END, p_list_str)  # Insertar los nuevos resultados
+        
+        # Determinar si es aleatorio o no y actualizar el texto correspondiente
+        aleatorio_texto[14].set("Aleatorio" if is_random else "No Aleatorio")
+
+def ejecutar_prueba_15(secuencia_binaria, resultados, aleatorio_texto):
+    # Eliminar saltos de línea y convertir a lista de enteros
+    secuencia_binaria_sin_saltos = secuencia_binaria.replace("\n", "")
+    secuencia_binaria_sin_saltos = [int(bit) for bit in secuencia_binaria_sin_saltos]
+    
+    if secuencia_binaria_sin_saltos:
+        # Ejecutar la prueba de excursión aleatoria
+        p_list, is_random = random_excursion_variant_test(secuencia_binaria_sin_saltos)
+        
+        # Formatear los p-valores
+        p_list_str = "\n".join([f"P-valor {i+1}: {p:.17f}" for i, p in enumerate(p_list)])
+        
+        # Mostrar los resultados formateados en el widget de tipo Text
+        resultados[15].delete(1.0, tk.END)  # Limpiar el contenido previo del widget Text
+        resultados[15].insert(tk.END, p_list_str)  # Insertar los nuevos resultados
+        
+        # Determinar si es aleatorio o no y actualizar el texto correspondiente
+        aleatorio_texto[15].set("Aleatorio" if is_random else "No Aleatorio")
+
+
+
+
 def ejecutar_pruebas_seleccionadas(check_vars, entrada_binario, resultados, aleatorio_texto):
     secuencia_binaria = entrada_binario.get("1.0", "end-1c")
     if check_vars[2].get():
@@ -228,10 +274,16 @@ def ejecutar_pruebas_seleccionadas(check_vars, entrada_binario, resultados, alea
         ejecutar_prueba_8(secuencia_binaria, resultados, aleatorio_texto)
     if check_vars[9].get():  # Verifica si la prueba 9 está seleccionada
         ejecutar_prueba_9(secuencia_binaria, resultados, aleatorio_texto)  # Llamada a la función de la prueba 9
-    if check_vars[12].get():  # Verifica si la prueba 9 está seleccionada
-        ejecutar_prueba_12(secuencia_binaria, resultados, aleatorio_texto)  # Llamada a la función de la prueba 9
-    if check_vars[13].get():  # Verifica si la prueba 9 está seleccionada
-        ejecutar_prueba_13(secuencia_binaria, resultados, aleatorio_texto)  # Llamada a la función de la prueba 9
+    if check_vars[11].get():  # Verifica si la prueba 11 está seleccionada
+        ejecutar_prueba_11(secuencia_binaria, resultados, aleatorio_texto)  # Llamada a la función de la prueba 11
+    if check_vars[12].get():  # Verifica si la prueba 12 está seleccionada
+        ejecutar_prueba_12(secuencia_binaria, resultados, aleatorio_texto)  # Llamada a la función de la prueba 12
+    if check_vars[13].get():  # Verifica si la prueba 13 está seleccionada
+        ejecutar_prueba_13(secuencia_binaria, resultados, aleatorio_texto)  # Llamada a la función de la prueba 13
+    if check_vars[14].get():  # Verifica si la prueba 13 está seleccionada
+        ejecutar_prueba_14(secuencia_binaria, resultados, aleatorio_texto)
+    if check_vars[15].get():  # Verifica si la prueba 13 está seleccionada
+        ejecutar_prueba_15(secuencia_binaria, resultados, aleatorio_texto)
 
 def generar_secuencia_aleatoria(entrada_cantidad_bits, entrada_binario, max_line_length=60):
     cantidad_bits = entrada_cantidad_bits.get()
@@ -295,6 +347,29 @@ def abrir_modal_config_prueba_9(root):
     # Botón para guardar la configuración
     Button(modal, text="Guardar", font=("Helvetica", 12), bg="#3B2C6A", fg="white", command=guardar_y_cerrar).pack(pady=10)
 
+def abrir_modal_config_prueba_11(root):
+    modal = Toplevel(root)
+    modal.title("Configuración de Prueba 11")
+    modal.geometry("300x250")
+    modal.configure(bg="#2E2A47")
+
+    frame_entrada = Frame(modal, bg="#2E2A47")
+    frame_entrada.pack(pady=10)
+    Label(frame_entrada, text="M:", font=("Helvetica", 14), fg="#F4C8FF", bg="#2E2A47").pack(side="left")
+    entrada_entropia = Entry(frame_entrada, width=10, font=("Helvetica", 14), bd=2, relief="solid")
+    entrada_entropia.pack(side="left", padx=5)
+    entrada_entropia.insert(0, cargar_valor("configuracionDePruebas/configT11.txt"))
+    def guardar_y_cerrar():
+        valor_entropia = entrada_entropia.get()
+        try:
+            valor_m = int(valor_entropia)
+            guardar_valor(str(valor_m), "configuracionDePruebas/configT11.txt")
+            modal.destroy()
+            messagebox.showinfo("Configuración Guardada", "Valor de entropía guardado.")
+        except ValueError:
+            messagebox.showerror("Error", "Por favor, ingrese un valor numérico válido para la entropía.")
+    Button(modal, text="Guardar", font=("Helvetica", 12), bg="#3B2C6A", fg="white", command=guardar_y_cerrar).pack(pady=10)
+
 def abrir_modal_config_prueba_12(root):
     modal = Toplevel(root)
     modal.title("Configuración de Prueba 12")
@@ -320,6 +395,19 @@ def abrir_modal_config_prueba_12(root):
 
 def abrir_modal_config_prueba_13(root):
     messagebox.showinfo("No hay parámetros para configurar", "La prueba 13 no requiere configuración.")
+
+def ejecutar_prueba_11(secuencia_binaria, resultados, aleatorio_texto):
+    valor_m = cargar_valor("configuracionDePruebas/configT11.txt")
+    secuencia_binaria_sin_saltos = secuencia_binaria.replace("\n", "").replace(" ", "")
+    if secuencia_binaria_sin_saltos and valor_m.isdigit():
+        M = int(valor_m)
+        secuencia_binaria_sin_saltos = secuencia_binaria.replace("\n", "")
+        secuencia_binaria_sin_saltos = [int(bit) for bit in secuencia_binaria_sin_saltos]
+        p_val1, p_val2, is_random = serial_test(secuencia_binaria_sin_saltos, M)
+        resultados[11].set(f"P-valor 1: {p_val1:.17f}\nP-valor 2: {p_val2:.17f}")
+        aleatorio_texto[11].set("Aleatorio" if is_random else "No Aleatorio")
+    else:
+        messagebox.showerror("Error", "La secuencia binaria o el valor de M no son válidos.")
 
 def ejecutar_prueba_12(secuencia_binaria, resultados, aleatorio_texto):
     valor_m = cargar_valor("configuracionDePruebas/configT12.txt")
