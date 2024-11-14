@@ -4,6 +4,7 @@ import random
 from T2FrecuencyWithinABlock import block_frequency
 from T3RunsTest import runs_test
 import mpmath as mp
+from T7_non_overlapping_template_matching_test import obtener_expansion_binaria_e7, non_overlapping_template_matching_test
 from T8OverlappingTemplateMatching import obtener_expansion_binaria_e, overlappingTemplateMachine
 from T9MaurersUniversalStatistical import universal_test
 from T12ApproximateEntropy import approximate_entropy_test
@@ -48,6 +49,56 @@ def insertar_texto_con_saltos(text_widget, texto, max_line_length=60):
     text_widget.delete('1.0', 'end')
     text_widget.insert('1.0', '\n'.join(lines) + '\n')
     text_widget.yview_moveto(1)
+
+def abrir_modal_config_prueba_7(root, entrada_binario):
+    modal = Toplevel(root)
+    modal.title("Configuración de Prueba 7")
+    modal.geometry("300x350")
+    modal.configure(bg="#2E2A47")
+
+    entradas = {}
+    frame_entrada = Frame(modal, bg="#2E2A47")
+    frame_entrada.pack(pady=10)
+    Label(frame_entrada, text="Patrón (B):", font=("Helvetica", 14), fg="#F4C8FF", bg="#2E2A47").pack(side="left")
+    entrada_patron = Entry(frame_entrada, width=20, font=("Helvetica", 14), bd=2, relief="solid")
+    entrada_patron.pack(side="left", padx=5)
+    entrada_patron.insert(0, cargar_valor("configuracionDePruebas/configT7_Patron.txt"))
+    entradas["Patrón (B)"] = entrada_patron
+
+    def guardar_y_cerrar():
+        valor_patron = entrada_patron.get()
+        if valor_patron:
+            guardar_valor(valor_patron, "configuracionDePruebas/configT7_Patron.txt")
+            modal.destroy()
+            messagebox.showinfo("Configuración Guardada", "Valores guardados.")
+        else:
+            messagebox.showerror("Error", "El patrón no puede estar vacío.")
+
+    Button(modal, text="Guardar", font=("Helvetica", 12), bg="#3B2C6A", fg="white", command=guardar_y_cerrar).pack(pady=10)
+    Label(modal, text="Generar expansión binaria", font=("Helvetica", 14), fg="#F4C8FF", bg="#2E2A47").pack(pady=10)
+    Label(modal, text="Número de bits:", font=("Helvetica", 14), fg="#F4C8FF", bg="#2E2A47").pack(pady=5)
+    entrada_numero_bits = Entry(modal, width=10, font=("Helvetica", 14), bd=2, relief="solid")
+    entrada_numero_bits.pack(pady=5)
+    entrada_numero_bits.insert(0, cargar_valor("configuracionDePruebas/configT7_NumeroBits.txt"))
+    entradas["Número de bits"] = entrada_numero_bits
+
+    def generar_expansion_binaria_modal():
+        n = entrada_numero_bits.get()
+        if n.isdigit():
+            bits = int(n)
+            expansion = obtener_expansion_binaria_e7(bits)
+            entrada_binario.delete('1.0', 'end')
+            insertar_texto_con_saltos(entrada_binario, expansion)
+
+            archivo_expansion = os.path.join(os.getcwd(), "configuracionDePruebas", "configT7_expansionBinaria.txt")
+            with open(archivo_expansion, "w") as file:
+                file.write(expansion)
+
+            messagebox.showinfo("Expansión Binaria Generada", f"La expansión binaria se ha cargado en el campo de secuencia binaria y guardado en {archivo_expansion}.")
+        else:
+            messagebox.showerror("Error", "Por favor, ingrese un número válido para los bits.")
+
+    Button(modal, text="Generar Expansión Binaria", font=("Helvetica", 12), bg="#3B2C6A", fg="white", command=generar_expansion_binaria_modal).pack(pady=10)
 
 def abrir_modal_config_prueba_8(root, entrada_binario):
     modal = Toplevel(root)
@@ -117,6 +168,17 @@ def ejecutar_prueba_3(secuencia_binaria, resultados, aleatorio_texto):
         resultados[3].set(f"P-valor: {p_val:.17f}")
         aleatorio_texto[3].set("Aleatorio" if is_random else "No Aleatorio")
 
+def ejecutar_prueba_7(secuencia_binaria, resultados, aleatorio_texto):
+    secuencia_binaria_sin_saltos = secuencia_binaria.replace("\n", "")
+    pattern = cargar_valor("configuracionDePruebas/configT7_Patron.txt")
+    
+    if secuencia_binaria_sin_saltos and pattern:
+        p_val, is_random = non_overlapping_template_matching_test(secuencia_binaria_sin_saltos, pattern)
+        resultados[7].set(f"P-valor: {p_val:.17f}")
+        aleatorio_texto[7].set("Aleatorio" if is_random else "No Aleatorio")
+    else:
+        messagebox.showerror("Error", "La secuencia o el patrón no son válidos.")
+
 def ejecutar_prueba_8(secuencia_binaria, resultados, aleatorio_texto):
     secuencia_binaria_sin_saltos = secuencia_binaria.replace("\n", "")
     pattern = cargar_valor("configuracionDePruebas/configT8_Patron.txt")
@@ -160,6 +222,8 @@ def ejecutar_pruebas_seleccionadas(check_vars, entrada_binario, resultados, alea
         ejecutar_prueba_2(secuencia_binaria, resultados, aleatorio_texto)
     if check_vars[3].get():
         ejecutar_prueba_3(secuencia_binaria, resultados, aleatorio_texto)
+    if check_vars[7].get():
+        ejecutar_prueba_7(secuencia_binaria, resultados, aleatorio_texto)
     if check_vars[8].get():
         ejecutar_prueba_8(secuencia_binaria, resultados, aleatorio_texto)
     if check_vars[9].get():  # Verifica si la prueba 9 está seleccionada

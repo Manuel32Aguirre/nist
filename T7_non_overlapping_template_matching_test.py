@@ -1,33 +1,13 @@
-#!/usr/bin/env python
-
-# sp800_22_non_overlapping_template_matching_test.py
-# 
-# Copyright (C) 2017 David Johnston
-# This program is distributed under the terms of the GNU General Public License.
-# 
-# This file is part of sp800_22_tests.
-# 
-# sp800_22_tests is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-# 
-# sp800_22_tests is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-# 
-# You should have received a copy of the GNU General Public License
-# along with sp800_22_tests.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function
 
 import math
 #from scipy.special import gamma, gammainc, gammaincc
 from gamma_functions import *
+from mpmath import mp
 import random
 
-def non_overlapping_template_matching_test(bits):
+def non_overlapping_template_matching_test(bits,pattern):
     # The templates provdided in SP800-22rev1a
     templates = [None for x in range(7)]
     templates[0] = [[0,1],[1,0]]
@@ -76,8 +56,8 @@ def non_overlapping_template_matching_test(bits):
     # Choose the template B
     r = random.SystemRandom()
     template_list = r.choice(templates)
-    B = r.choice(template_list)
-    
+    B = pattern
+    print(B)
     m = len(B)
     
     N = 8
@@ -111,3 +91,9 @@ def non_overlapping_template_matching_test(bits):
 
     success = ( p >= 0.01)
     return (p,success)
+
+def obtener_expansion_binaria_e7(bits):
+    mp.dps = bits + 2
+    e = mp.e
+    binario_e = bin(int(e * (2 ** bits)))[2:].zfill(bits)
+    return binario_e
