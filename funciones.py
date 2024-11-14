@@ -8,6 +8,7 @@ from T8OverlappingTemplateMatching import obtener_expansion_binaria_e, overlappi
 from T9MaurersUniversalStatistical import universal_test
 from T12ApproximateEntropy import approximate_entropy_test
 from T3RunsTest import runs_test
+from T13CumulativeSum import cumulative_sums
 
 def guardar_valor(valor, archivo):
     with open(archivo, "w") as file:
@@ -163,6 +164,8 @@ def ejecutar_pruebas_seleccionadas(check_vars, entrada_binario, resultados, alea
         ejecutar_prueba_9(secuencia_binaria, resultados, aleatorio_texto)  # Llamada a la función de la prueba 9
     if check_vars[12].get():  # Verifica si la prueba 9 está seleccionada
         ejecutar_prueba_12(secuencia_binaria, resultados, aleatorio_texto)  # Llamada a la función de la prueba 9
+    if check_vars[13].get():  # Verifica si la prueba 9 está seleccionada
+        ejecutar_prueba_13(secuencia_binaria, resultados, aleatorio_texto)  # Llamada a la función de la prueba 9
 
 def generar_secuencia_aleatoria(entrada_cantidad_bits, entrada_binario, max_line_length=60):
     cantidad_bits = entrada_cantidad_bits.get()
@@ -249,6 +252,9 @@ def abrir_modal_config_prueba_12(root):
             messagebox.showerror("Error", "Por favor, ingrese un valor numérico válido para la entropía.")
     Button(modal, text="Guardar", font=("Helvetica", 12), bg="#3B2C6A", fg="white", command=guardar_y_cerrar).pack(pady=10)
 
+def abrir_modal_config_prueba_13(root):
+    messagebox.showinfo("No hay parámetros para configurar", "La prueba 13 no requiere configuración.")
+
 def ejecutar_prueba_12(secuencia_binaria, resultados, aleatorio_texto):
     valor_m = cargar_valor("configuracionDePruebas/configT12.txt")
     secuencia_binaria_sin_saltos = secuencia_binaria.replace("\n", "").replace(" ", "")
@@ -259,3 +265,23 @@ def ejecutar_prueba_12(secuencia_binaria, resultados, aleatorio_texto):
         aleatorio_texto[12].set("Aleatorio" if is_random else "No Aleatorio")
     else:
         messagebox.showerror("Error", "La secuencia binaria o el valor de M no son válidos.")
+
+def ejecutar_prueba_13(secuencia_binaria, resultados, aleatorio_texto):
+    secuencia_binaria_sin_saltos = secuencia_binaria.replace("\n", "").replace(" ", "")
+    
+    if secuencia_binaria_sin_saltos:
+        # Ejecuta la prueba de sumas acumulativas
+        p_val1, p_val2, es_aleatorio_adelante, es_aleatorio_reversa = cumulative_sums(secuencia_binaria_sin_saltos)
+        
+        # Actualiza los resultados de la interfaz para la prueba 13
+        resultados[13].set(f"P-valor (adelante): {p_val1:.17f}\nP-valor (reversa): {p_val2:.17f}")
+        if(es_aleatorio_adelante and es_aleatorio_reversa):
+            aleatorio_texto[13].set("Aleatorio\nAleatorio")
+        elif(es_aleatorio_adelante and not es_aleatorio_reversa):
+            aleatorio_texto[13].set("Aleatorio\nNo Aleatorio")
+        elif(not es_aleatorio_adelante and es_aleatorio_reversa):
+            aleatorio_texto[13].set("No Aleatorio\nAleatorio")
+        else:
+            aleatorio_texto[13].set("No Aleatorio\nNo Aleatorio")
+    else:
+        messagebox.showerror("Error", "La secuencia binaria no es válida.")
