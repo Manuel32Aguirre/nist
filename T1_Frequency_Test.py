@@ -1,22 +1,24 @@
-def prueba_monobit(datos_binarios):
-    n = len(datos_binarios)
-    if n == 0:
-        return -1, False
-    
-    cuenta_unos = datos_binarios.count(1)
-    
-    s_obs = abs(cuenta_unos - (n - cuenta_unos)) / (n ** 0.5)
-    
-    from math import erfc
-    valor_p = erfc(s_obs / (2 ** 0.5))
-    
-    # Determinar si la secuencia pasa la prueba
-    pasa_prueba = valor_p >= 0.01
-    
-    return valor_p, pasa_prueba
+import math
+
+def prueba_monobit(binary_sequence):
+    n = len(binary_sequence)
+    count = binary_sequence.count('1')
+    s_obs = abs(count - (n - count))
+    s_obs = s_obs / math.sqrt(n)
+    p_value = math.erfc(s_obs / math.sqrt(2))
+    passes_test = p_value >= 0.01
+    return p_value, passes_test
 
 # Example usage
 if __name__ == '__main__':
-    binary_sequence = [1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1]
+
+    # Texto binario extraído y limpio
+    binary_string = "11001001000011111101101010100010001000010110100011" \
+                    "00001000110100110001001100011001100010100010111000"
+
+    binary_sequence = list(binary_string)
+
+    print(f"Binary sequence: {binary_sequence.__len__()} bits")
+
     p_value, passes_test = prueba_monobit(binary_sequence)
     print(f"p-value: {p_value}, Passes test: {passes_test}")

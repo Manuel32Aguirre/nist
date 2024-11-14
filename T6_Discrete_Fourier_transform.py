@@ -1,27 +1,44 @@
 import numpy as np
-from scipy.fftpack import fft
+from scipy.fft import fft
 from scipy.special import erfc
-def transformada_fourier_discreta_nist(lista_datos_binarios):
-    datos_binarios = ''.join(map(str, lista_datos_binarios))
-    n = len(datos_binarios)
-    X = np.array([1 if bit == '1' else -1 for bit in datos_binarios])
-    
-    S = np.abs(fft(X))**2
-    
-    T = np.sqrt(np.log(1/0.05) * n)
-    
-    N0 = 0.95 * n / 2
-    N1 = np.sum(S[1:n//2] < T)
-    
-    d = N1 - N0
-    valor_p = erfc(np.abs(d) / np.sqrt(2))
-    
-    pasa_prueba = valor_p >= 0.01
 
-    return valor_p, pasa_prueba
+def nist_dft_test(sequence):
+    # Convertir la lista binaria de 0 y 1 a -1 y 1
+    sequence = np.array([1 if bit == 1 else -1 for bit in sequence])
+
+    # Calcular la FFT
+    fft_result = fft(sequence)
+
+    # Calcular la magnitud de la FFT
+    magnitude = np.abs(fft_result)[:len(sequence) // 2]
+
+    # Calcular el umbral
+    threshold = np.sqrt(np.log(1.0 / 0.05) * len(sequence))
+
+    # Contar el número de frecuencias por debajo del umbral
+    n0 = 0.95 * (len(sequence) / 2)
+    n1 = np.sum(magnitude < threshold)
+
+    # Calcular la estadística d
+    d = (n1 - n0) / np.sqrt(len(sequence) * 0.95 * 0.05 / 4)
+
+    # Calcular el valor p
+    p_value = erfc(np.abs(d) / np.sqrt(2))
+
+    # Decisión de rechazo
+    is_random = p_value >= 0.01
+
+    return p_value, is_random
+
 
 if __name__ == '__main__':
-    # Test the function
-    binary_data = '11001001000011111101101010100010001000010110100011'
-    p_value, passes_test = transformada_fourier_discreta_nist(binary_data)
-    print(f"P-value: {p_value}, passes test: {passes_test}")
+    # Ejemplo de uso
+    binary_string = "11001001000011111101101010100010001000010110100011" \
+                    "00001000110100110001001100011001100010100010111000"
+    
+    binary_sequence = list(binary_string)
+
+    print(f"Binary sequence: {len(binary_sequence)} bits")
+
+    p_value, passes = nist_dft_test(binary_sequence)
+    print(f"P-value: {p_value}, Passes test: {passes}")
